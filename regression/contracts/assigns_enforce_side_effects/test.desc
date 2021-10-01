@@ -1,0 +1,10 @@
+CORE
+main.c
+--enforce-contract foo
+^EXIT=1$
+^SIGNAL=0$
+^main.c:\d+:\d+: error: Assigns clause is not side-effect free.$
+^CONVERSION ERROR$
+--
+--
+Check that expressions with side effects are rejected from assigns clauses.

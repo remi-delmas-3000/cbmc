@@ -1,0 +1,10 @@
+CORE
+main.c
+--enforce-contract foo
+^EXIT=1$
+^SIGNAL=0$
+^main.c:\d+:\d+: error: illegal target in assigns clause$
+^CONVERSION ERROR$
+--
+--
+Check that address_of expressions are rejected in assigns clauses.
