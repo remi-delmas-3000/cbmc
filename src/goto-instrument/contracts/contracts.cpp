@@ -678,19 +678,26 @@ bool code_contractst::apply_function_contract(
   return false;
 }
 
+#define ACTIVATE_BUG 1
 void code_contractst::apply_loop_contract(
   const irep_idt &function_name,
   goto_functionst::goto_functiont &goto_function)
 {
+#if ACTIVATE_BUG
+// BUG : inline function before finding loops in it
+  goto_function_inline(
+    goto_functions, function_name, ns, log.get_message_handler());
+#endif
+
   local_may_aliast local_may_alias(goto_function);
   natural_loops_mutablet natural_loops(goto_function.body);
 
   if(!natural_loops.loop_map.size())
     return;
-
+#if !ACTIVATE_BUG
   goto_function_inline(
     goto_functions, function_name, ns, log.get_message_handler());
-
+#endif
   // A graph node type that stores information about a loop.
   // We create a DAG representing nesting of various loops in goto_function,
   // sort them topologically, and instrument them in the top-sorted order.
