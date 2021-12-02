@@ -119,5 +119,7 @@ const symbolt &new_tmp_symbol(
   symbol_table_baset &symtab,
   std::string suffix = "tmp_cc");
 
+/// Add disable pragmas for all pointer checks on the given location
+void disable_pointer_checks(source_locationt &source_location);
 
 #endif // CPROVER_GOTO_INSTRUMENT_CONTRACTS_UTILS_H

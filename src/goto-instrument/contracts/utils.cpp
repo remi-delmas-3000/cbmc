@@ -153,3 +153,11 @@ const symbolt &new_tmp_symbol(
     mode,
     symtab);
 }
+
+/// Add disable pragmas for all pointer checks on the given location
+void disable_pointer_checks(source_locationt &source_location)
+{
+  source_location.add_pragma("disable:pointer-check");
+  source_location.add_pragma("disable:pointer-primitive-check");
+  source_location.add_pragma("disable:pointer-overflow-check");
+}
