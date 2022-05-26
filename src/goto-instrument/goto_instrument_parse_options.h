@@ -41,6 +41,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "unwindset.h"
 
 #include "contracts/contracts.h"
+#include "contracts/dfcc.h"
 #include "wmm/weak_memory.h"
 
 // clang-format off
@@ -95,6 +96,7 @@ Author: Daniel Kroening, kroening@kroening.com
   "(z3)(add-library)(show-dependence-graph)" \
   "(horn)(skip-loops):(model-argc-argv):" \
   "(" FLAG_LOOP_CONTRACTS ")" \
+  "(" FLAG_DFCC ")" \
   "(" FLAG_REPLACE_CALL "):" \
   "(" FLAG_ENFORCE_CONTRACT "):" \
   "(show-threaded)(list-calls-args)" \

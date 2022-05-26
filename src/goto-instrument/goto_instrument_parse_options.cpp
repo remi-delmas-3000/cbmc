@@ -1150,6 +1150,11 @@ void goto_instrument_parse_optionst::instrument_goto_program()
     goto_model.goto_functions.update();
   }
 
+  if(cmdline.isset(FLAG_DFCC))
+  {
+    dfcct dfcc(goto_model, log);
+  }
+
   if(
     cmdline.isset(FLAG_LOOP_CONTRACTS) || cmdline.isset(FLAG_REPLACE_CALL) ||
     cmdline.isset(FLAG_ENFORCE_CONTRACT))
@@ -1867,6 +1872,7 @@ void goto_instrument_parse_optionst::help()
     HELP_REPLACE_CALLS
     "\n"
     "Code contracts:\n"
+    HELP_DFCC
     HELP_LOOP_CONTRACTS
     HELP_REPLACE_CALL
     HELP_ENFORCE_CONTRACT
