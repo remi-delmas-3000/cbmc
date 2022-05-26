@@ -17,6 +17,7 @@ Author: Daniel Kroening, kroening@kroening.com
 typedef __typeof__(sizeof(int)) __CPROVER_size_t;
 // NOLINTNEXTLINE(readability/identifiers)
 typedef signed long long __CPROVER_ssize_t;
+typedef void __CPROVER_assignable_t;
 
 void *__CPROVER_allocate(__CPROVER_size_t size, __CPROVER_bool zero);
 void __CPROVER_deallocate(void *);
