@@ -777,6 +777,29 @@ void c_typecheck_baset::typecheck_declaration(
           CPROVER_PREFIX "loop_entry is not allowed in preconditions.");
       };
 
+      auto check_freed = [&](const exprt &expr)
+      {
+        const irep_idt id = CPROVER_PREFIX "is_freed";
+
+        auto pred = [&](const exprt &expr)
+        {
+          if(!can_cast_expr<side_effect_expr_function_callt>(expr))
+            return false;
+
+          auto &called_function =
+            to_side_effect_expr_function_call(expr).function();
+          return can_cast_expr<symbol_exprt>(called_function) &&
+                 (to_symbol_expr(called_function).get_identifier() == id);
+        };
+
+        if(!has_subexpr(expr, pred))
+          return;
+
+        error().source_location = expr.source_location();
+        error() << id2string(id) + " is not allowed in preconditions." << eom;
+        throw 0;
+      };
+
       auto check_return_value = [&](const exprt &expr)
       {
         const irep_idt id = CPROVER_PREFIX "return_value";
@@ -853,6 +876,7 @@ void c_typecheck_baset::typecheck_declaration(
           typecheck_expr(requires);
           implicit_typecast_bool(requires);
           check_history_expr(requires);
+          check_freed(requires);
           check_return_value(requires);
           lambda_exprt lambda{temporary_parameter_symbols, requires};
           lambda.add_source_location() = requires.source_location();
