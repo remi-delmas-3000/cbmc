@@ -1,0 +1,258 @@
+/*******************************************************************\
+
+Module: Dynamic frame condition checking for function contracts
+
+Author: Remi Delmas, delmasrd@amazon.com
+
+\*******************************************************************/
+
+/// \file
+/// Dynamic frame condition checking library loading
+
+#ifndef CPROVER_GOTO_INSTRUMENT_CONTRACTS_DYNAMIC_FRAMES_DFCC_LIBRARY_H
+#define CPROVER_GOTO_INSTRUMENT_CONTRACTS_DYNAMIC_FRAMES_DFCC_LIBRARY_H
+
+#include <util/irep.h>
+#include <util/optional.h>
+
+#include <map>
+#include <set>
+
+/// One enum value per type defined by the `cprover_dfcc.c` library file.
+/// These enums are used to perform lookups into maps that contain the actual
+/// symbols and to avoid using strings/irep_ids everywhere.
+enum class dfcc_typet
+{
+  /// return type of functions that specify freeable locations (declarative)
+  FREEABLE,
+  /// return type of functions that specify assignable locations (declarative)
+  ASSIGNABLE,
+  /// type of descriptors of conditionally assignable ranges of bytes
+  CAR,
+  /// type of sets of CAR
+  CAR_SET,
+  /// type of pointers to sets of CAR
+  CAR_SET_PTR,
+  /// type of sets of object identifiers
+  OBJ_SET,
+  /// type of pointers to sets of object identifiers
+  OBJ_SET_PTR,
+  /// type of descriptors of assignable/freeable sets of locations
+  WRITE_SET,
+  /// type of pointers to descriptors of assignable/freeable sets of locations
+  WRITE_SET_PTR
+};
+
+/// One enum value per function defined by the `cprover_dfcc.c` library file.
+/// These enums are used to perform lookups into maps that contain the actual
+/// symbols and to avoid using strings/irep_ids everywhere.
+enum class dfcc_funt
+{
+  /// \see __CPROVER_contracts_car_create
+  CAR_CREATE,
+  /// \see __CPROVER_contracts_car_set_create
+  CAR_SET_CREATE,
+  /// \see __CPROVER_contracts_car_set_insert
+  CAR_SET_INSERT,
+  /// \see __CPROVER_contracts_car_set_remove
+  CAR_SET_REMOVE,
+  /// \see __CPROVER_contracts_car_set_contains
+  CAR_SET_CONTAINS,
+  /// \see __CPROVER_contracts_obj_set_create_indexed_by_object_id
+  OBJ_SET_CREATE_INDEXED_BY_OBJECT_ID,
+  /// \see __CPROVER_contracts_obj_set_create_append
+  OBJ_SET_CREATE_APPEND,
+  /// \see __CPROVER_contracts_obj_set_add
+  OBJ_SET_ADD,
+  /// \see __CPROVER_contracts_obj_set_append
+  OBJ_SET_APPEND,
+  /// \see __CPROVER_contracts_obj_set_remove
+  OBJ_SET_REMOVE,
+  /// \see __CPROVER_contracts_obj_set_contains
+  OBJ_SET_CONTAINS,
+  /// \see __CPROVER_contracts_obj_set_contains_exact
+  OBJ_SET_CONTAINS_EXACT,
+  /// \see __CPROVER_contracts_write_set_create
+  WRITE_SET_CREATE,
+  /// \see __CPROVER_contracts_write_set_release
+  WRITE_SET_RELEASE,
+  /// \see __CPROVER_contracts_write_set_insert_assignable
+  WRITE_SET_INSERT_ASSIGNABLE,
+  /// \see __CPROVER_contracts_write_set_insert_whole_object
+  WRITE_SET_INSERT_WHOLE_OBJECT,
+  /// \see __CPROVER_contracts_write_set_insert_object_from
+  WRITE_SET_INSERT_OBJECT_FROM,
+  /// \see __CPROVER_contracts_write_set_object_upto
+  WRITE_SET_INSERT_OBJECT_UPTO,
+  /// \see __CPROVER_contracts_write_set_add_freeable
+  WRITE_SET_ADD_FREEABLE,
+  /// \see __CPROVER_contracts_write_set_add_allocated
+  WRITE_SET_ADD_ALLOCATED,
+  /// \see __CPROVER_contracts_write_set_record_dead
+  WRITE_SET_RECORD_DEAD,
+  /// \see __CPROVER_contracts_write_set_record_deallocated
+  WRITE_SET_RECORD_DEALLOCATED,
+  /// \see __CPROVER_contracts_write_set_check_allocated_deallocated_is_empty
+  WRITE_SET_CHECK_ALLOCATED_DEALLOCATED_IS_EMPTY,
+  /// \see __CPROVER_contracts_write_set_check_assignment
+  WRITE_SET_CHECK_ASSIGNMENT,
+  /// \see __CPROVER_contracts_write_set_check_array_set
+  WRITE_SET_CHECK_ARRAY_SET,
+  /// \see __CPROVER_contracts_write_set_check_array_copy
+  WRITE_SET_CHECK_ARRAY_COPY,
+  /// \see __CPROVER_contracts_write_set_check_array_replace
+  WRITE_SET_CHECK_ARRAY_REPLACE,
+  /// \see __CPROVER_contracts_write_set_check_havoc_object
+  WRITE_SET_CHECK_HAVOC_OBJECT,
+  /// \see __CPROVER_contracts_write_set_check_deallocate
+  WRITE_SET_CHECK_DEALLOCATE,
+  /// \see __CPROVER_contracts_write_set_check_assigns_clause_inclusion
+  WRITE_SET_CHECK_ASSIGNS_CLAUSE_INCLUSION,
+  /// \see __CPROVER_contracts_write_set_check_frees_clause_inclusion
+  WRITE_SET_CHECK_FREES_CLAUSE_INCLUSION,
+  /// \see __CPROVER_contracts_write_set_deallocate_freeable
+  WRITE_SET_DEALLOCATE_FREEABLE,
+  /// \see __CPROVER_contracts_write_set_havoc_get_assignable_target
+  WRITE_SET_HAVOC_GET_ASSIGNABLE_TARGET,
+  /// \see __CPROVER_contracts_write_set_havoc_whole_object
+  WRITE_SET_HAVOC_WHOLE_OBJECT,
+  /// \see __CPROVER_contracts_write_set_havoc_slice
+  WRITE_SET_HAVOC_SLICE,
+  /// \see __CPROVER_contracts_link_is_freshr_allocated
+  LINK_IS_FRESHR_ALLOCATED,
+  /// \see __CPROVER_contracts_link_deallocated
+  LINK_DEALLOCATED,
+  /// \see __CPROVER_contracts_is_freshr
+  IS_FRESHR,
+  /// \see __CPROVER_contracts_is_freeable
+  IS_FREEABLE,
+  /// \see __CPROVER_contracts_is_freed
+  IS_FREED,
+  /// \see __CPROVER_contracts_check_replace_ensures_is_freed_preconditions
+  REPLACE_ENSURES_IS_FREED_PRECONDITIONS
+};
+
+class goto_modelt;
+class goto_functiont;
+class goto_programt;
+class messaget;
+class message_handlert;
+class symbolt;
+class symbol_exprt;
+class typet;
+class dfcc_utilst;
+
+/// Class interface to library types and functions defined in
+/// `cprover_contracts.c`.
+class dfcc_libraryt
+{
+public:
+  dfcc_libraryt(goto_modelt &goto_model, dfcc_utilst &utils, messaget &log);
+
+protected:
+  /// True iff the contracts library symbols are loaded
+  static bool loaded;
+
+  /// True iff the library functions are inlined
+  static bool inlined;
+
+  /// True iff the library functions are specialized
+  /// to a particular contract
+  static bool specialized;
+
+  /// True iff the library functions uses of malloc and free are fixed
+  static bool malloc_free_fixed;
+
+  goto_modelt &goto_model;
+  dfcc_utilst &utils;
+  messaget &log;
+  message_handlert &message_handler;
+
+  /// Collects the names of all library functions currently missing from the
+  /// goto_model into `missing`. The ones that also need to be instrumented
+  /// are added to `to_instrument`.
+  void get_missing_funs(
+    std::set<irep_idt> &missing,
+    std::set<irep_idt> &to_instrument);
+
+  /// Inlines library functions that need to be inlined before use
+  void inline_functions();
+
+  /// Fixes function calls to malloc and free in library functions.
+  /// Change calls to `__CPROVER_contracts_malloc` into calls to `malloc`
+  /// Change calls to `__CPROVER_contracts_free` into calls to `free`
+  void fix_malloc_free_calls();
+
+public:
+  /// Maps enum values to the actual types (dynamically loaded)
+  std::map<dfcc_typet, typet> dfcc_type;
+
+  /// Maps enum values to the actual function symbols (dynamically loaded)
+  std::map<dfcc_funt, symbolt> dfcc_fun_symbol;
+
+  /// After calling this function, all library types and functions are present
+  /// in the the goto_model. Any other functions that the DFCC functions rely on
+  /// and need to be instrumented will be added to `to_instrument`
+  void load(std::set<irep_idt> &to_instrument);
+
+  /// Returns the dfcc_funt that corresponds to the given id if any.
+  optionalt<dfcc_funt> get_dfcc_fun(const irep_idt &id) const;
+
+  /// Returns the name of the given dfcc_funt.
+  const irep_idt &get_dfcc_fun_name(dfcc_funt fun) const;
+
+  /// True iff the given id is one of the library symbols.
+  bool is_dfcc_library_symbol(const irep_idt &id) const;
+
+  /// Specializes the library by unwinding loops in library functions
+  /// to the given assigns clause size.
+  /// \param contract_assigns_size_hint size of the assigns clause being checked
+  void specialize(const int contract_assigns_size_hint);
+
+  /// Adds an ASSERT(false) body to all front-end functions
+  /// __CPROVER_whole_object
+  /// __CPROVER_object_upto
+  /// __CPROVER_object_from
+  /// __CPROVER_assignable
+  /// __CPROVER_freeable
+  /// To make sure they cannot be used in a proof unexpectedly
+  /// without causing verification errors.
+  void inhibit_front_end_builtins();
+
+  /// Sets the given hide flag on all instructions of all library functions
+  void set_hide(bool hide);
+
+  /// Returns the library instrumentation hook for the given built-in.
+  /// function_id must be one of `__CPROVER_assignable`,
+  /// `__CPROVER_whole_object`, `__CPROVER_object_from`,
+  /// `__CPROVER_object_upto`, `__CPROVER_freeable`
+  optionalt<dfcc_funt> get_hook(const irep_idt &function_id) const;
+
+  /// Returns the library instrumentation hook for the given built-in.
+  /// function_id must be one of `__CPROVER_assignable`,
+  /// `__CPROVER_whole_object`, `__CPROVER_object_from`, `__CPROVER_object_upto`
+  optionalt<dfcc_funt> get_havoc_hook(const irep_idt &function_id) const;
+
+  /// Returns the "__dfcc_instrumented_functions" symbol or creates it if it
+  /// does not exist already.
+  /// This symbol is an unbounded map of booleans indexed
+  /// by function pointer ID, that holds value true for functions
+  /// that accept an extra write set parameter and false ones that don't.
+  /// To have this map actually defined one must call
+  /// \ref create_initialize_function with the set of instrumented functions.
+  const symbolt &get_instrumented_functions_map_symbol();
+
+  /// Generates instructions to initialize the instrumented function map
+  /// symbol from the given set of instrumented function
+  void add_instrumented_functions_map_init_instructions(
+    const std::set<irep_idt> &instrumented_functions,
+    goto_programt &dest);
+
+  /// Re-generates the INITIALIZE_FUNCTION, embedding the information that
+  /// functions in `instrumented_functions` have been instrumented into the
+  /// goto model.
+  void
+  create_initialize_function(const std::set<irep_idt> &instrumented_functions);
+};
+
+#endif
