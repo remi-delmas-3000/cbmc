@@ -32,6 +32,9 @@ loop.
 
 ## Syntax
 
+An _assigns_ clause allows the user to specify a set of locations that may be
+assigned to by a function or the body of a loop:
+
 ```c
 __CPROVER_assigns(targets)
 ```
