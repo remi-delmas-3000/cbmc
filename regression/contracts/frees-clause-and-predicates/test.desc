@@ -1,7 +1,7 @@
 CORE
 main.c
---enforce-contract foo
-^\[foo.postcondition.\d+\] line \d+ Check ensures clause: FAILURE$
+-dfcc main --enforce-contract foo
+^\[foo.postcondition.\d+\].*Check ensures clause: FAILURE^
 ^VERIFICATION FAILED$
 ^EXIT=10$
 ^SIGNAL=0$

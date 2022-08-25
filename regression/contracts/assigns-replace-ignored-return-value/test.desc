@@ -1,8 +1,6 @@
 CORE
 main.c
---replace-call-with-contract bar --replace-call-with-contract baz --enforce-contract foo
-^\[bar.precondition.\d+\] line \d+ Check requires clause of bar in foo: SUCCESS$
-^\[baz.precondition.\d+\] line \d+ Check requires clause of baz in foo: SUCCESS$
+--dfcc main --replace-call-with-contract bar --replace-call-with-contract baz --enforce-contract foo
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$
@@ -10,6 +8,6 @@ main.c
 ^\[.*assigns.*\].*ignored_return_value.*FAILURE
 --
 This test checks that when replacing a call by a contract for a call that
-ignores the return value of the function, the temporary introduced to 
+ignores the return value of the function, the temporary introduced to
 receive the call result does not trigger errors with assigns clause Checking
 in the function under verification.
