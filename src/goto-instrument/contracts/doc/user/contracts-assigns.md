@@ -1,6 +1,8 @@
-[CPROVER Manual TOC](../../)
+# Assigns Clauses {#contracts-assigns}
 
-# Assigns Clauses
+Back to @ref contracts-user
+
+@tableofcontents
 
 An _assigns clause_ lets the user to specify which memory locations may be
 assigned to by a function or a loop.
@@ -42,15 +44,14 @@ __CPROVER_assigns(targets)
 Where `targets` has the following syntax:
 
 ```
-targets           ::= cond-target-group (';' cond-target-group)* ';'?
+          targets ::= cond-target-group (';' cond-target-group)* ';'?
 cond-target-group ::= (condition ':')? target (',' target)*
-target            ::= lvalue-expr
+           target ::= lvalue-expr
                     | __CPROVER_typed_target(lvalue-expr)
                     | __CPROVER_object_whole(ptr-expr)
                     | __CPROVER_object_from(ptr-expr)
                     | __CPROVER_object_upto(ptr-expr, uint-expr)
 ```
-
 
 For function contracts, the condition and target expressions
 in the assigns clause may only involve function parameters,
@@ -260,6 +261,7 @@ int main() {
   vec_clear(vec);
 }
 ```
+
 ---
 
 ```c
@@ -516,3 +518,17 @@ int foo()
   return rval;
 }
 ```
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

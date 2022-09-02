@@ -1,21 +1,17 @@
-[CPROVER Manual TOC](../../)
+# Loop Contracts {#contracts-loops}
 
-# Loop Contracts
+Back to @ref contracts-user
+
+@tableofcontents
 
 CBMC offers support for loop contracts, which includes three basic clauses:
-
-- _invariant_ clause for establishing safety properties
-- _decreases_ clause for establishing termination, and
-- _assigns_ clause for declaring the subset of variables that is modifiable in the loop.
+- an _invariant_ clause for establishing safety properties,
+- a _decreases_ clause for establishing termination,
+- an _assigns_ clause for declaring the memory locations assignable by the loop,
 
 These clauses formally describe an abstraction of a loop for the purpose of a proof.
 CBMC also provides a series of built-in constructs
 to aid writing loop contracts (e.g., _history variables_ and _quantifiers_).
-
-When a function contract is checked, the tool automatically havocs all static variables
-of the program (to start the analysis in an arbitrary state), in the same way
-as using `--nondet-static` would do. If one wishes not to havoc some static variables,
-then `--nondet-static-exclude name-of-variable` can be used.
 
 ## Overview
 
@@ -66,7 +62,7 @@ A developer might be interested in verifying two high-level properties on the lo
 2. the loop must eventually always terminate
 
 To prove the first (memory-safety) property,
-we may declare [_loop invariants_](../../contracts/invariants/)
+we may declare a [_loop invariant_](@ref contracts-loop-invariants)
 that must be preserved across all loop iterations.
 In this case, two invariant clauses would together imply that `buf[mid]` lookup is always safe.
 The first invariant clause would establish that the bounds (`lb` and `ub`) are always valid:
@@ -83,7 +79,7 @@ __CPROVER_loop_invariant(mid == (lb + ub) / 2L)
 ```
 
 To prove the second (termination) property,
-we may declare a [_decreases clause_](../../contracts/decreases/)
+we may declare a [_decreases clause_](@ref contracts-decreases)
 that indicates a bounded numeric measure
 which must monotonically decrease with each loop iteration.
 In this case, it is easy to see that `lb` and `ub` are approaching closer together with each iteration, since either `lb` must increase or `ub` must decrease in each iteration.
@@ -146,10 +142,17 @@ and finally we verify the instrumented GOTO binary with desired checks.
 
 ## Additional Resources
 
-- [Assigns Clause](../../contracts/assigns/)
-- [Decreases Clause](../../contracts/decreases/)
-- [History Variables](../../contracts/history-variables/)
-- [Invariant Clause](../../contracts/invariants/)
-- [Quantifiers](../../contracts/quantifiers/)
-
 [binary search algorithm]: https://en.wikipedia.org/wiki/Binary_search_algorithm
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

@@ -1,6 +1,7 @@
-[CPROVER Manual TOC](../../)
+# Frees Clauses {#contracts-frees}
+Back to @ref contracts-user
 
-# Frees Clauses
+@tableofcontents
 
 A _frees clause_ allows the user to specify a set of pointers that may be freed
 by a function or by the function it calls, transitively.
@@ -123,3 +124,18 @@ __CPROVER_bool __CPROVER_was_freed(void *ptr);
 ```
 can only be used in post conditions and returns `true` if and only if the
 pointer was freed during the execution of the function under analysis.
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

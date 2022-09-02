@@ -1,8 +1,10 @@
-[CPROVER Manual TOC](../../)
+# Memory Predicates {#contracts-memory-predicates}
 
-# Memory Predicates
+Back to @ref contracts-user
 
-### Syntax
+@tableofcontents
+
+## Syntax
 
 ```c
 bool __CPROVER_is_fresh(void *p, size_t size);
@@ -22,7 +24,7 @@ available at the pointer.
 
 It returns a `bool` value, indicating whether the pointer is fresh.
 
-### Semantics
+## Semantics
 
 To illustrate the semantics for `__CPROVER_is_fresh`, consider the following implementation of `sum` function.
 
@@ -43,7 +45,7 @@ __CPROVER_assigns(*out, err_signal)
 }
 ```
 
-#### Enforcement
+### Enforcement
 
 When checking the contract abstracts a function a `__CPROVER_is_fresh`
 in a _requires_ clause will cause fresh memory to be allocated.
@@ -53,7 +55,7 @@ In an _ensures_ clause it will check that memory was freshly allocated.
 int *err_signal; // Global variable
 
 int __CPROVER_contracts_original_sum(const uint32_t a, const uint32_t b, uint32_t* out)
-{	 
+{
   const uint64_t result = ((uint64_t) a) + ((uint64_t) b);
   err_signal = malloc(sizeof(*err_signal));
   if (!err_signal) return;
@@ -72,7 +74,7 @@ int sum(const uint32_t a, const uint32_t b, uint32_t* out)
 }
 ```
 
-#### Replacement
+### Replacement
 
 In our example, consider that a function `foo` may call `sum`.
 
@@ -102,18 +104,33 @@ int foo()
   uint32_t a;
   uint32_t b;
   uint32_t out;
-	
+
   /* Function Contract Replacement */
   /* Precondition */
   __CPROVER_assert(__CPROVER_is_fresh(out, sizeof(*out)), "Check requires clause");
-	
+
   /* Writable Set */
   *(&out) = nondet_uint32_t();
   err_signal = nondet_int_pointer();
-	
+
   /* Postconditions */
   __CPROVER_assume(__CPROVER_is_fresh(err_signal, sizeof(*err_signal))); // Assumes out is allocated
 
   return *err_signal;
 }
 ```
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

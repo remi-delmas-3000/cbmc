@@ -1,8 +1,10 @@
-[CPROVER Manual TOC](../../)
+# Quantifiers {#contracts-quantifiers}
 
-# Quantifiers
+Back to @ref contracts-user
 
-### Syntax
+@tableofcontents
+
+## Syntax
 
 ```c
 __CPROVER_forall { *type* *identifier*; *boolean expression* }
@@ -30,7 +32,7 @@ or non-strict (e.g., `*upper bound* <= *id*`),
 but both the bounds **must** be constants.
 
 
-### Semantics
+## Semantics
 
 For `__CPROVER_forall` all `*type*` values for `*identifier*` must satisfy
 `*boolean expression*`.
@@ -89,3 +91,18 @@ int bar_sat(int *arr, int len)
   /* at least one element in arr must be set to 1 */
 }
 ```
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers
