@@ -1,6 +1,8 @@
-[CPROVER Manual TOC](../../)
+# History Variables {#contracts-history-variables}
 
-# History Variables
+Back to @ref contracts-user
+
+@tableofcontents
 
 ## In Function Contracts
 
@@ -41,3 +43,18 @@ __CPROVER_assigns(*out)
 ## In Loop Contracts
 
 TODO: Document `__CPROVER_loop_entry` and `__CPROVER_loop_old`.
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

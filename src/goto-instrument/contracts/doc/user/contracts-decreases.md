@@ -1,6 +1,8 @@
-[CPROVER Manual TOC](../../)
+# Decreases Clauses {#contracts-decreases}
 
-# Decreases Clauses
+Back to @ref contracts-user
+
+@tableofcontents
 
 A _decreases_ clause specifies a measure that must strictly decrease at every iteration of a loop.
 By demonstrating that the measure
@@ -16,7 +18,7 @@ This technique for proving termination was proposed by Robert Floyd,
 and interested readers may refer to his seminal paper
 "[_Assigning Meaning to Programs_](https://people.eecs.berkeley.edu/~necula/Papers/FloydMeaning.pdf)".
 
-### Syntax
+## Syntax
 
 A one-dimensional (1D) decreases clause for a loop is an arithmetic expression `e`
 over the variables visible at the same scope as the loop,
@@ -32,7 +34,7 @@ __CPROVER_decreases(n - i)
 { ... }
 ```
 
-Please see the [invariant clauses](../../contracts/invariants/) page
+Please see the [loop invariant clauses](@ref contracts-loop-invariants) page
 for more examples on `for` and `do...while` loops.
 
 To help prove termination of more complex loops,
@@ -69,9 +71,9 @@ Otherwise, CBMC raises an error message during compilation:
 Decreases clause is not side-effect free. (at: file main.c line 4 function main) 
 ```
 
-### Semantics
+## Semantics
 
-A decreases clause extends the loop abstraction introduced in the [invariants clause](../../contracts/invariants/) manual.
+A decreases clause extends the loop abstraction introduced in the [loop invariant clause](@ref contracts-loop-invariants) documentation.
 In addition to the inductiveness check asserted at the end of a single arbitrary iteration,
 CBMC would also assert the strict decrement of the measure specified in the decreases clause.
 At a high level, in addition to the assumptions and assertions introduced by the invariant clause,
@@ -167,8 +169,23 @@ int binary_search(int val, int *buf, int size)
 
 The instrumented code points (5), (6), (8), and (9) are specific to the decreases clause.
 
-**Important.** 
-Decreases clauses work in conjunction with [loop invariants](../../contracts/invariants/),
+**Important.**
+Decreases clauses work in conjunction with [loop invariant clauses](@ref contracts-loop-invariants),
 which model an arbitrary loop iteration at which the decreases clause is checked.
 If a decreases clause is annotated on a loop without an invariant clause,
 then the weakest possible invariant (i.e, `true`) is used to model an arbitrary iteration.
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

@@ -1,10 +1,10 @@
-[CPROVER Manual TOC](../../)
+# Assigns Clauses {#contracts-assigns}
 
-# Assigns Clause
+Back to @ref contracts-user
 
-## In Function Contracts
+@tableofcontents
 
-### Syntax
+## Syntax
 
 An _assigns_ clause allows the user to specify a set of locations that may be
 assigned to by a function or the body of a loop:
@@ -27,8 +27,8 @@ conditional_target_group ::= (condition ':')? target (',' target)*
 target ::= lvalue-expression | call-to-cprover-assignable-t-function
 ```
 
-The set of locations writable by a function is the union of the locations
-specified by the assigns clauses, or the empty set of no _assigns_ clause is
+The set of locations writable by a function is the union of the sets of locations
+specified by its assigns clauses, or the empty set of no _assigns_ clause is
 specified.
 While, in general, an _assigns_ clause could be interpreted with either
 _writes_ or _modifies_ semantics, this design is based on the former.
@@ -77,7 +77,7 @@ havoc these byte ranges, and `__CPROVER_havoc_slice` does not support
 havocing pointers. `__CPROVER_typed_target` must be used to specify targets
 that are pointers.
 
-### Specifying parameterized and reusable sets of assignable locations
+## Specifying parameterized sets of assignable locations using functions
 
 Users can specify sets of assignable locations by writing their own functions
 returning the built-in type `__CPROVER_assignable_t`.
@@ -137,7 +137,7 @@ functions are evaluated and any target they describe gets added to
 the write set. If a function call is not reachable according to the control flow
 the target does not get added to the write set.
 
-### Parameters
+### Function Parameters
 
 An _assigns_ clause currently supports simple variable types and their pointers,
 structs, and arrays.  Recursive pointer structures are left to future work, as
@@ -157,12 +157,12 @@ int sum(const uint32_t a, const uint32_t b, uint32_t* out)
 __CPROVER_assigns(*out, err_signal)
 ```
 
-### Semantics
+## Semantics
 
 The semantics of an _assigns_ clause of a given function can be understood
 in two contexts: enforcement and replacement.
 
-#### Enforcement
+### Contract Enforcement
 
 In order to determine whether an _assigns_ clause is a sound abstraction of
 the write set of a function *f*, the body of the function is instrumented with
@@ -231,12 +231,12 @@ parameters without dereferences.  For example, in a variable declaration `<type>
 x = <initial_value>`, `x` would be added to the *free* set. Assignment statements
 where the left-hand-side is in the *free* set are not instrumented with the above assertions.
 
-#### Replacement
+### Contract Replacement
 
 Assuming _assigns_ clauses are a sound abstraction of the write set for
 a given function, CBMC will use the function contract in place of the function
 implementation as described by
-[Requires \& Ensures Clauses](../../contracts/requires-and-ensures/#replacement), and it will add
+[Requires \& Ensures Clauses](@ref contracts-requires-ensures), and it will add
 non-deterministic assignments for each object listed in the `__CPROVER_assigns`
 clause. Since these objects might be modified by the function, CBMC uses
 non-deterministic assignments to havoc them and restrict their values only by
@@ -301,6 +301,17 @@ int foo()
 }
 ```
 
-## In Loop Contracts
+## Additional Resources
 
-TODO: Document `__CPROVER_assigns` for loops.
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

@@ -1,8 +1,10 @@
-[CPROVER Manual TOC](../../)
+# Frees Clauses {#contracts-frees}
 
-# Frees Clause
+Back to @ref contracts-user
 
-### Syntax
+@tableofcontents
+
+## Syntax
 
 A _frees_ clause allows the user to specify a set of pointers that may be freed
 by a function or the body of a loop:
@@ -82,18 +84,18 @@ int main()
 }
 ```
 
-### Semantics
+## Semantics
 
 The set of pointers specified by the frees clause of the contract is interpreted
 at the function call-site for function contracts, and right before entering the
 loop for loop contracts.
 
-#### For contract checking
+### For contract checking
 When checking a contract against a function or a loop, each pointer that the
 function or loop body attempts to free gets checked for membership in the set of
 pointers specified by the contract.
 
-#### For replacement of function calls or loops by contracts
+### For replacement of function calls or loops by contracts
 When replacing a function call or a loop by a contract, each pointer of the
 _frees_ clause is non-deterministically freed after the function call
 or after the loop.
@@ -154,3 +156,18 @@ __CPROVER_bool __CPROVER_is_freed(void *ptr);
 can only be used in post conditions and returns `true` if and only if the
 pointer was freed during the execution of the function or the loop under
 analysis.
+
+## Additional Resources
+
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers

@@ -1,6 +1,8 @@
-[CPROVER Manual TOC](../../)
+# Loop Invariant Clauses {#contracts-loop-invariants}
 
-# Invariant Clauses
+Back to @ref contracts-user
+
+@tableofcontents
 
 An _invariant_ clause specifies a property that must be preserved
 by every iteration of a loop.
@@ -11,7 +13,7 @@ However, `true` is rarely useful --
 it is an extremely imprecise abstraction of a loop,
 which is generally not _sufficient_ to prove any subsequent assertions.
 
-### Syntax
+## Syntax
 
 An _invariant_ clause accepts a valid Boolean expression
 over the variables visible at the same scope as the loop.
@@ -53,7 +55,7 @@ Otherwise, CBMC raises an error message during compilation:
 Loop invariant is not side-effect free. (at: file main.c line 4 function main) 
 ```
 
-### Semantics
+## Semantics
 
 A loop invariant clause expands to several assumptions and assertions:
 1. The invariant is _asserted_ just before the first iteration.
@@ -143,7 +145,7 @@ A few things to note here:
   using alias analysis of l-values appearing in the loop body.
   However, the analysis is incomplete and may fail to characterize the set for complex loops.
   In such cases, the user must manually annotate the set of modified variables
-  using an [_assigns clause_](../../contracts/assigns/).
+  using an [_assigns clause_](@ref contracts-assigns).
 
 - At instrumented code point (6), when we _assume_ `false`,
   observe that this assumption only exists within the `lb <= ub` conditional.
@@ -151,6 +153,17 @@ A few things to note here:
   The code outside of the conditional block continues to be symbolically executed,
   and subsequent assertions do not become vacuously `true`.
 
-[history variables]: ../../contracts/history-variables/
+## Additional Resources
 
-[binary search]: https://en.wikipedia.org/wiki/Binary_search_algorithm
+- @ref contracts-functions
+  - @ref contracts-requires-ensures
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-loops
+  - @ref contracts-loop-invariants
+  - @ref contracts-decreases
+  - @ref contracts-assigns
+  - @ref contracts-frees
+- @ref contracts-memory-predicates
+- @ref contracts-history-variables
+- @ref contracts-quantifiers
