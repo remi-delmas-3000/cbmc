@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract assign_out_under
+--dfcc main --enforce-contract assign_out_under
 ^EXIT=10$
 ^SIGNAL=0$
 ^VERIFICATION FAILED$

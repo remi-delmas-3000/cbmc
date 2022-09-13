@@ -1,6 +1,6 @@
 KNOWNBUG
 main.c
---check-code-contracts
+--dfcc main --check-code-contracts
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$

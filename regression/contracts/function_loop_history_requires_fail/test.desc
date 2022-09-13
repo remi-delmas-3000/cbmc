@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract bar
+--dfcc main --enforce-contract bar
 ^main.c.* error: __CPROVER_loop_entry is not allowed in preconditions.$
 ^CONVERSION ERROR$
 ^EXIT=(1|64)$

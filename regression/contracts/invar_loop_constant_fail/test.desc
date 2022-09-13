@@ -1,6 +1,6 @@
 CORE
 main.c
---apply-loop-contracts
+--dfcc main --apply-loop-contracts
 ^EXIT=10$
 ^SIGNAL=0$
 ^\[main\.\d+\] .* Check loop invariant before entry: SUCCESS$

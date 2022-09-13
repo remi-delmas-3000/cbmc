@@ -1,0 +1,11 @@
+CORE
+main.c
+--dfcc main --enforce-contract foo
+^\[foo.assigns.\d+\] line \d+ Check that \*x is valid: SUCCESS$
+^VERIFICATION SUCCESSFUL$
+^EXIT=0$
+^SIGNAL=0$
+--
+--
+Checks whether verification fails when enforcing a contract
+for functions, without assigns clauses, that modify an input.

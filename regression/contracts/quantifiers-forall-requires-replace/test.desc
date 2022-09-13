@@ -1,6 +1,6 @@
 CORE
 main.c
---replace-call-with-contract f1
+--dfcc main --replace-call-with-contract f1
 ^EXIT=0$
 ^SIGNAL=0$
 ^\[f1.precondition.\d+\] line \d+ Check requires clause of f1 in main: SUCCESS$

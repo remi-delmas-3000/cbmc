@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^EXIT=10$
 ^SIGNAL=0$
 ^\[foo.assigns.\d+\] line \d+ Check that POINTER_OBJECT\((\(.+\))?y\) is assignable: FAILURE$

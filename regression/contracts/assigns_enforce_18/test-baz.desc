@@ -1,0 +1,15 @@
+CORE
+main.c
+--dfcc main --enforce-contract baz _ --pointer-primitive-check
+^\[baz.assigns.\d+\] line 23 Check that \*a is valid: SUCCESS$
+^\[baz.assigns.\d+\] line 25 Check that POINTER_OBJECT\(\(void \*\)c\) is assignable: FAILURE$
+^\[baz.assigns.\d+\] line 26 Check that \*a is assignable: SUCCESS$
+^VERIFICATION FAILED$
+^EXIT=10$
+^SIGNAL=0$
+--
+--
+Checks whether contract enforcement works with functions that deallocate memory.
+We had problems before when freeing a variable, but still keeping it on
+the writable set, which lead to deallocated variables issues.
+Now, if a memory is deallocated, we remove it from the our freely assignable set.

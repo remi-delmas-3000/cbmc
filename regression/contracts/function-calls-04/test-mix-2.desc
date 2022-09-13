@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract f1 --enforce-contract f2_out --replace-call-with-contract f2_in
+--dfcc main --enforce-contract f2_out --replace-call-with-contract f2_in
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$
@@ -9,7 +9,7 @@ main.c
 Verification:
   function | pre-cond | post-cond
   ---------|----------|----------
-  f1       | assumed  | asserted
+  f1       | n/a      | n/a
   f2_out   | assumed  | asserted
   f2_in    | asserted | assumed
 

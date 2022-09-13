@@ -1,6 +1,6 @@
 KNOWNBUG
 main.c
---enforce-contract foo --replace-call-with-contract bar --replace-call-with-contract baz
+--dfcc main --enforce-contract foo --replace-call-with-contract bar --replace-call-with-contract baz
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$
