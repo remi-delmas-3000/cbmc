@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract baz
+--dfcc main --enforce-contract baz
 ^EXIT=(1|64)$
 ^SIGNAL=0$
 ^.*error: pointer_object expects one argument$

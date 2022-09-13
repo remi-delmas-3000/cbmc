@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^.* error: (void-typed expressions not allowed as assigns clause targets|dereferencing void pointer)$
 ^CONVERSION ERROR$
 ^EXIT=(1|64)$

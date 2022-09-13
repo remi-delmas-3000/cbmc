@@ -1,6 +1,6 @@
 CORE
 main.c
---apply-loop-contracts
+--dfcc main --apply-loop-contracts
 ^VERIFICATION SUCCESSFUL$
 ^EXIT=0$
 ^SIGNAL=0$

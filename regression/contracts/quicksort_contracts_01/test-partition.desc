@@ -1,6 +1,6 @@
 KNOWNBUG
 main.c
---enforce-contract quicksort --enforce-contract partition --apply-loop-contracts
+--dfcc main --enforce-contract partition --apply-loop-contracts
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$

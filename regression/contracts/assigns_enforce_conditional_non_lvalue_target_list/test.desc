@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^.*error: assigns clause target must be an lvalue or a call to __CPROVER_POINTER_OBJECT or to a function returning __CPROVER_assignable_t$
 ^CONVERSION ERROR
 ^EXIT=(1|64)$

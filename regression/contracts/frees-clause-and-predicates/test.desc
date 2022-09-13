@@ -1,6 +1,6 @@
 CORE
 main.c
--dfcc main --enforce-contract foo
+--dfcc main -dfcc main --enforce-contract foo
 ^VERIFICATION SUCCESSFUL$
 ^EXIT=0$
 ^SIGNAL=0$

@@ -1,6 +1,6 @@
 CORE
 main-contract-signature-conflict.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^Contract of 'foo' has different signature\.$
 ^EXIT=6$
 ^SIGNAL=0$

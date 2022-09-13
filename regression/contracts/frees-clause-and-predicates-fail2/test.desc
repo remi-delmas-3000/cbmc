@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^main.c.* error: expecting __CPROVER_freeable_t return type for function foo_frees called in frees clause$
 ^CONVERSION ERROR$
 ^EXIT=(1|64)$

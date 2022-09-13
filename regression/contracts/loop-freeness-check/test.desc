@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^--- begin invariant violation report ---$
 ^Invariant check failed$
 ^Condition: is_loop_free\(.*\)

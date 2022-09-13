@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^EXIT=(1|64)$
 ^SIGNAL=0$
 ^.*error: expecting __CPROVER_assignable_t return type for function bar called in assigns clause$

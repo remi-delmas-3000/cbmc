@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo --restrict-function-pointer foo.function_pointer_call.1/contract --replace-call-with-contract contract --replace-call-with-contract bar
+--dfcc main --enforce-contract foo --restrict-function-pointer foo.function_pointer_call.1/contract --replace-call-with-contract contract --replace-call-with-contract bar
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$

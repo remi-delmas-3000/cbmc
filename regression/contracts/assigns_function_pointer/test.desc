@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract bar
+--dfcc main --enforce-contract bar
 ^EXIT=0$
 ^SIGNAL=0$
 ^\[bar.assigns.\d+\] line \d+ Check that s->f is assignable: SUCCESS$

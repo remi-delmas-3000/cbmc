@@ -1,6 +1,6 @@
 CORE
 main.c
---apply-loop-contracts --replace-call-with-contract ackermann
+--dfcc main --apply-loop-contracts --replace-call-with-contract ackermann
 ^\[ackermann.precondition\.\d+\] line 17 Check requires clause: SUCCESS$
 ^\[ackermann.precondition\.\d+\] line 17 Check requires clause: SUCCESS$
 ^\[ackermann\.\d+\] line 21 Check loop invariant before entry: SUCCESS$

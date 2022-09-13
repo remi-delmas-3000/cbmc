@@ -1,6 +1,6 @@
 CORE
 main.c
---enforce-contract foo
+--dfcc main --enforce-contract foo
 ^\[foo.assigns.\d+\].* Check that \*loc1 is assignable: SUCCESS$
 ^\[foo.assigns.\d+\].* Check that \*loc2 is assignable: SUCCESS$
 ^VERIFICATION SUCCESSFUL$
