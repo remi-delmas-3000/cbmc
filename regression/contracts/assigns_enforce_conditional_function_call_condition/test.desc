@@ -2,7 +2,6 @@ CORE
 main.c
 --dfcc main --enforce-contract foo
 ^main.c function foo$
-^\[foo.assigns.\d+\] line 10 Check that \*x is valid when .*: SUCCESS$
 ^\[foo.assigns.\d+\] line 16 Check that \*x is assignable: SUCCESS$
 ^\[foo.assigns.\d+\] line 20 Check that \*x is assignable: FAILURE$
 ^VERIFICATION FAILED$

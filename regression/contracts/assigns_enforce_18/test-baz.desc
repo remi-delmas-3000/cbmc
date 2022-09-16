@@ -1,8 +1,7 @@
 CORE
 main.c
 --dfcc main --enforce-contract baz _ --pointer-primitive-check
-^\[baz.assigns.\d+\] line 23 Check that \*a is valid: SUCCESS$
-^\[baz.assigns.\d+\] line 25 Check that POINTER_OBJECT\(\(void \*\)c\) is assignable: FAILURE$
+^\[free.frees.\d+\] line \d+ Check that ptr is freeable: FAILURE
 ^\[baz.assigns.\d+\] line 26 Check that \*a is assignable: SUCCESS$
 ^VERIFICATION FAILED$
 ^EXIT=10$

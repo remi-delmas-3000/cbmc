@@ -2,8 +2,6 @@ CORE
 main.c
 --dfcc main --enforce-contract foo
 main.c function foo
-^\[foo.assigns.\d+\] line 3 Check that \*x is valid when a != FALSE: SUCCESS$
-^\[foo.assigns.\d+\] line 3 Check that \*y is valid when !\(a != FALSE\): SUCCESS$
 ^\[foo.assigns.\d+\] line 7 Check that \*x is assignable: SUCCESS$
 ^\[foo.assigns.\d+\] line 8 Check that \*y is assignable: FAILURE$
 ^\[foo.assigns.\d+\] line 12 Check that \*x is assignable: FAILURE$
