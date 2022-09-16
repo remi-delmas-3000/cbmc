@@ -5,7 +5,6 @@ main.c
 \[main\.\d+\] line \d+ Check that loop invariant is preserved: SUCCESS$
 \[main\.\d+\] line \d+ Check decreases clause on loop iteration: SUCCESS$
 \[main\.\d+\] line \d+ Check that loop instrumentation was not truncated: SUCCESS$
-\[main\.assigns\.\d+\] line \d+ Check that x is valid: SUCCESS$
 \[main\.assigns\.\d+\] line \d+ Check that x is assignable: SUCCESS$
 ^VERIFICATION SUCCESSFUL$
 ^EXIT=0$

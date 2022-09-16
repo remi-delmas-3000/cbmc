@@ -9,8 +9,6 @@ main.c
 ^\[main.\d+\] line \d+ Check loop invariant before entry: SUCCESS$
 ^\[main.\d+\] line \d+ Check that loop invariant is preserved: SUCCESS$
 ^\[main.assigns.\d+\] line \d+ Check that i is assignable: SUCCESS$
-^\[main.assigns.\d+\] line \d+ Check that i is valid: SUCCESS$
-^\[main.assigns.\d+\] line \d+ Check that j is valid: SUCCESS$
 ^\[main.assertion.\d+\] line \d+ assertion j == 9: SUCCESS$
 ^\[main.assertion.\d+\] line \d+ assertion before_loop\(\) == 0: SUCCESS$
 ^\[main.assertion.\d+\] line \d+ assertion after_loop\(\) == 0: SUCCESS$

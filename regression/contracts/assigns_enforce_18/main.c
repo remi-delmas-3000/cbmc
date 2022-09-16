@@ -14,13 +14,16 @@ void foo(int *xp, int *xq, int a) __CPROVER_assigns(*xp)
   y = -1;
 }
 
-void bar(int *a, int *b) __CPROVER_assigns(*a, *b)
+void bar(int *a, int *b)
+  __CPROVER_assigns(*b)
+  __CPROVER_frees(a)
 {
   free(a);
   *b = 0;
 }
 
-void baz(int *a, int *c) __CPROVER_assigns(*a)
+void baz(int *a, int *c)
+  __CPROVER_assigns(*a)
 {
   free(c);
   *a = 0;

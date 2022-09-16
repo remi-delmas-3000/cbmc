@@ -3,7 +3,6 @@ main.c
 --dfcc main --apply-loop-contracts _ --signed-overflow-check --unsigned-overflow-check
 \[main.\d+\] line \d+ Check loop invariant before entry: SUCCESS$
 \[main.\d+\] line \d+ Check that loop invariant is preserved: SUCCESS$
-\[main.assigns.\d+\] line \d+ Check that end is valid: SUCCESS$
 \[main.assigns.\d+\] line \d+ Check that end is assignable: SUCCESS$
 \[main.assertion.\d+\] line \d+ assertion end == start: SUCCESS$
 \[main.assertion.\d+\] line \d+ assertion start <= end && end <= size: SUCCESS$

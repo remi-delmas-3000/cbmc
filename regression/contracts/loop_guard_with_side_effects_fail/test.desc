@@ -5,7 +5,6 @@ main.c
 \[main\.\d+\] line \d+ Check loop invariant before entry: SUCCESS$
 \[main\.\d+\] line \d+ Check that loop invariant is preserved: SUCCESS$
 \[main.assigns\.\d+\] line \d+ Check that i is assignable: SUCCESS$
-\[main.assigns\.\d+\] line \d+ Check that i is valid: SUCCESS$
 \[main.assertion\.\d+\] line \d+ assertion i == k: SUCCESS$
 ^EXIT=(6|10)$
 ^SIGNAL=0$

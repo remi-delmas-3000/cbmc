@@ -1,9 +1,8 @@
 CORE
 main.c
 --dfcc main --enforce-contract foo --replace-call-with-contract quz
-^\[foo.assigns.\d+\] line \d+ Check that \*y is valid: SUCCESS$
 ^\[bar.assigns.\d+\] line \d+ Check that \*y is assignable: SUCCESS$
-^\[bar.assigns.\d+\] line \d+ Check that x \(assigned by the contract of quz\) is assignable: FAILURE$
+^\[quz.assigns.\d+\] Check that the assigns clause of contract::quz is included in the caller's assigns clause: FAILURE$
 ^VERIFICATION FAILED$
 ^EXIT=10$
 ^SIGNAL=0$

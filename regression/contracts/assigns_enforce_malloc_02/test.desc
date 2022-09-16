@@ -1,6 +1,6 @@
 CORE
 main.c
---dfcc main --enforce-contract f1
+--dfcc main --enforce-contract f1 _ --unwindset f1_wrapped_for_contract_checking.0:10
 ^Invariant check failed$
 ^Condition: is_loop_free
 ^Reason: Loops remain in function 'f1', assigns clause checking instrumentation cannot be applied\.
