@@ -1,7 +1,7 @@
 CORE
 main.c
 --dfcc main --enforce-contract bar _ --pointer-primitive-check
-^\[bar.assigns.\d+\] line 20 Check that \*b is assignable: SUCCESS$
+^\[bar.assigns.\d+\] line \d+ Check that \*b is assignable: SUCCESS$
 ^VERIFICATION SUCCESSFUL$
 ^EXIT=0$
 ^SIGNAL=0$

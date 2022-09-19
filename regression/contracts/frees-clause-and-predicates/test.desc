@@ -1,12 +1,12 @@
 CORE
 main.c
---dfcc main -dfcc main --enforce-contract foo
+-dfcc main --enforce-contract foo
 ^VERIFICATION SUCCESSFUL$
 ^EXIT=0$
 ^SIGNAL=0$
 --
 --
-This test checks that using the -dffdfcc flag we can check contracts that use:
+This test checks that using the -dfcc flag we can check contracts that use:
 - __CPROVER_freeable_t function calls as frees clause targets
 - the __CPROVER_freeable built-in
 - the __CPROVER_is_freeable built-in predicate

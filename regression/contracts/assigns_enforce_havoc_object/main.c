@@ -33,7 +33,7 @@ void bar(sta *a)
 }
 
 void foo(sta *a1, sta *a2)
-  __CPROVER_assigns(__CPROVER_object_whole(a1->u.b->c))
+  __CPROVER_assigns(__CPROVER_whole_object(a1->u.b->c))
 {
   bar(a1);
   bar(a2);

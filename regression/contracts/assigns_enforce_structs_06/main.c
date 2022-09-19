@@ -8,7 +8,7 @@ struct pair
   size_t size;
 };
 
-void f1(struct pair *p) __CPROVER_assigns(__CPROVER_object_whole(p->buf))
+void f1(struct pair *p) __CPROVER_assigns(__CPROVER_whole_object(p->buf))
 {
   p->buf[0] = 0;
   p->buf[1] = 1;

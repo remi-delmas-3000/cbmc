@@ -6,7 +6,7 @@ void assigns_single(int a[], int len)
 }
 
 void uses_assigns(int a[], int len)
-  __CPROVER_assigns(__CPROVER_object_whole(a))
+  __CPROVER_assigns(__CPROVER_whole_object(a))
 {
   assigns_single(a, len);
 }
