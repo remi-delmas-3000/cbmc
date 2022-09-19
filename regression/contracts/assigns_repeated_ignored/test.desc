@@ -1,7 +1,6 @@
 CORE
 main.c
 --dfcc main --enforce-contract foo
-^Ignored duplicate expression '\*x' in assigns clause spec at file main.c line \d+ function .*$
 ^EXIT=0$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$
