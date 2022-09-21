@@ -16,6 +16,7 @@ __CPROVER_requires(
   __CPROVER_is_fresh(v->arr, v->size)
 )
 __CPROVER_assigns(v->size, v->arr, __CPROVER_whole_object(v->arr))
+__CPROVER_frees(v->arr)
 __CPROVER_ensures(
   v->size == __CPROVER_old(v->size) + __CPROVER_old(incr) &&
   __CPROVER_is_fresh(v->arr, v->size)

@@ -1,6 +1,6 @@
 int foo(int *arr)
   // clang-format off
-  __CPROVER_assigns(__CPROVER_POINTER_OBJECT(arr))
+  __CPROVER_assigns(__CPROVER_whole_object(arr))
 // clang-format off
 {
   for(int i = 0; i < 10; i++)

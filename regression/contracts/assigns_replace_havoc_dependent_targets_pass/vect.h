@@ -15,7 +15,8 @@ __CPROVER_requires(
   0 < incr && incr < __CPROVER_max_malloc_size - v->size &&
   __CPROVER_is_fresh(v->arr, v->size)
 )
-__CPROVER_assigns(v->size, v->arr, __CPROVER_POINTER_OBJECT(v->arr))
+__CPROVER_assigns(v->size, v->arr, __CPROVER_whole_object(v->arr))
+__CPROVER_frees(v->arr)
 __CPROVER_ensures(
   v->size == __CPROVER_old(v->size) + __CPROVER_old(incr) &&
   __CPROVER_is_fresh(v->arr, v->size)
@@ -36,7 +37,7 @@ __CPROVER_requires(
   v->size + 10 < __CPROVER_max_malloc_size &&
   __CPROVER_is_fresh(v->arr, v->size)
 )
-__CPROVER_assigns(*v, __CPROVER_POINTER_OBJECT(v->arr))
+__CPROVER_assigns(*v, __CPROVER_whole_object(v->arr))
 __CPROVER_ensures(
   v->size == __CPROVER_old(v->size) + 10 &&
   __CPROVER_is_fresh(v->arr, v->size)

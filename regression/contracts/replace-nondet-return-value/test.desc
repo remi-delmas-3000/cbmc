@@ -7,7 +7,7 @@ main.c
 ^\[main\.assertion\.2\] line \d+ expecting FAILURE: FAILURE$
 ^\[main\.assertion\.3\] line \d+ expecting SUCCESS: SUCCESS$
 ^\[main\.assertion\.4\] line \d+ expecting FAILURE: FAILURE$
-^\*\* 2 of 4 failed
+^\*\* 2 of \d+ failed
 ^VERIFICATION FAILED$
 --
 --

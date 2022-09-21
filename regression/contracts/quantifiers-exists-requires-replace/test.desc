@@ -3,8 +3,8 @@ main.c
 --dfcc main --replace-call-with-contract f1 --replace-call-with-contract f2
 ^EXIT=10$
 ^SIGNAL=0$
-^\[f1.precondition.\d+\] line \d+ Check requires clause: SUCCESS$
-^\[f2.precondition.\d+\] line \d+ Check requires clause: FAILURE$
+^\[f1.precondition.\d+\] line \d+ Check requires clause of contract contract::f1 for function f1_wrapped_for_replacement_with_contract: SUCCESS$
+^\[f2.precondition.\d+\] line \d+ Check requires clause of contract contract::f2 for function f2_wrapped_for_replacement_with_contract: FAILURE$
 ^VERIFICATION FAILED$
 --
 ^warning: ignoring
