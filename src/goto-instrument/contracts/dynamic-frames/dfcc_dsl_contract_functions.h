@@ -40,20 +40,20 @@ class function_pointer_obeys_contract_exprt;
 ///
 /// Populates write_set_to_fill with targets of the assigns clause
 /// checks its own body against write_set_to_check:
-/// ```
+/// ```c
 /// __CPROVER_assignable_t contract_id::assigns(
 ///     function-params,
 ///     write_set_to_fill,
 ///     write_set_to_check);
-///
+/// ```
 /// Havocs the targets specified in the assigns clause, assuming
 /// write_set_to_havoc is a snapshot created using contract_id::assigns:
-/// ```
+/// ```c
 /// void contract_id::assigns::havoc(write_set_to_havoc);
 /// ```
 /// Populates write_set_to_fill with targets of the frees clause
 /// checks its own body against write_set_to_check:
-/// ```
+/// ```c
 /// __CPROVER_assignable_t contract_id::frees(
 ///     function-params,
 ///     write_set_to_fill,
