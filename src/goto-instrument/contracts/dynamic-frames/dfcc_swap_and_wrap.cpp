@@ -124,24 +124,26 @@ void dfcc_swap_and_wrapt::get_swapped_functions(std::set<irep_idt> &dest) const
   }
 }
 
-/// Generates statics:
-/// ```
-/// static bool on_stack = false;
-/// static bool checked = false;
+/// \details Generates globals statics:
+/// ```c
+/// static bool __contract_check_started = false;
+/// static bool __contract_check_completed = false;
 /// ```
 ///
-/// Generates instructions:
-/// ```
-/// IF on_stack GOTO replace;
+/// Adds the following instructions in the wrapper function body:
+/// ```c
+/// IF __contract_check_started GOTO replace;
 /// ASSERT !checked "only a single top-level called allowed";
-/// on_stack = true;
-/// <add_contract_checking_instructions>;
-/// checked = true;
-/// on_stack = false;
+/// __contract_check_started = true;
+/// <contract_handler.add_contract_checking_instructions(...)>;
+/// __contract_check_completed = true;
+/// __contract_check_started = false;
 /// GOTO end;
 /// replace:
-/// <add_contract_replacement_instructions>      // if allow_recursive_calls
-/// ASSERT false, "recursive calls not allowed"; // if !allow_recursive_calls
+/// // if allow_recursive_calls
+/// <contract_handler.add_contract_replacement_instructions(...)>;
+/// // if !allow_recursive_calls
+/// ASSERT false, "recursive calls not allowed";
 /// end:
 /// END_FUNCTION;
 /// ```
