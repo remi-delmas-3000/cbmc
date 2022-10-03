@@ -88,6 +88,8 @@ static const std::map<dfcc_funt, irep_idt> dfcc_fun_to_name = {
     CONTRACTS_PREFIX "obj_set_create_indexed_by_object_id"},
   {dfcc_funt::OBJ_SET_CREATE_APPEND,
     CONTRACTS_PREFIX "obj_set_create_append"},
+  {dfcc_funt::OBJ_SET_RELEASE,
+    CONTRACTS_PREFIX "obj_set_release"},
   {dfcc_funt::OBJ_SET_ADD,
     CONTRACTS_PREFIX "obj_set_add"},
   {dfcc_funt::OBJ_SET_APPEND,
@@ -144,10 +146,12 @@ static const std::map<dfcc_funt, irep_idt> dfcc_fun_to_name = {
     CONTRACTS_PREFIX "write_set_havoc_whole_object"},
   {dfcc_funt::WRITE_SET_HAVOC_SLICE,
     CONTRACTS_PREFIX "write_set_havoc_slice"},
+  {dfcc_funt::LINK_IS_FRESH,
+    CONTRACTS_PREFIX "link_is_fresh"},
+  {dfcc_funt::LINK_ALLOCATED,
+    CONTRACTS_PREFIX "link_allocated"},
   {dfcc_funt::LINK_DEALLOCATED,
     CONTRACTS_PREFIX "link_deallocated"},
-  {dfcc_funt::LINK_IS_FRESHR_ALLOCATED,
-    CONTRACTS_PREFIX "link_is_freshr_allocated"},
   {dfcc_funt::IS_FRESHR,
     CONTRACTS_PREFIX "is_freshr"},
   {dfcc_funt::IS_FREEABLE,
@@ -524,7 +528,8 @@ const symbolt &dfcc_libraryt::get_instrumented_functions_map_symbol()
     source_locationt{},
     ID_C,
     "<built-in-library>",
-    array_of_exprt(from_integer(0, c_bool_typet(8)), map_type));
+    array_of_exprt(from_integer(0, c_bool_typet(8)), map_type),
+    true);
 }
 
 void dfcc_libraryt::add_instrumented_functions_map_init_instructions(
@@ -551,12 +556,21 @@ void dfcc_libraryt::add_instrumented_functions_map_init_instructions(
 void dfcc_libraryt::create_initialize_function(
   const std::set<irep_idt> &instrumented_functions)
 {
+#if 0
+  // TODO re-enable once we can have nondet-static with with arbitrary LHS
+  // expressions in the INITIALIZE_FUNCTION function and we stop removing
+  // function pointers ahead of instrumentation
   // creates the symbol if it does not exist already
   get_instrumented_functions_map_symbol();
+#endif
 
   // initialises all statics
   utils.create_initialize_function();
 
+#if 0
+  // TODO re-enable once we can have nondet-static with with arbitrary LHS
+  // expressions in the INITIALIZE_FUNCTION function and we stop removing
+  // function pointers ahead of instrumentation
   // add extra init instructions at the end
   goto_programt payload;
   add_instrumented_functions_map_init_instructions(
@@ -567,5 +581,6 @@ void dfcc_libraryt::create_initialize_function(
   auto end = body.instructions.end();
   end--;
   body.destructive_insert(end, payload);
+#endif
   goto_model.goto_functions.update();
 }
