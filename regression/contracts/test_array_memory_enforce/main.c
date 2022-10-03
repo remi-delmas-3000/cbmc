@@ -14,14 +14,15 @@ bool return_ok(int ret_value, int *x)
 
 // clang-format off
 int foo(int *x)
-  __CPROVER_assigns(__CPROVER_whole_object(x))
+  __CPROVER_assigns(__CPROVER_object_from(x))
   __CPROVER_requires(
     __CPROVER_is_fresh(x, sizeof(int) * 10) &&
     x[0] > 0 &&
     ptr_ok(x))
   __CPROVER_ensures(
     !ptr_ok(x) &&
-    !__CPROVER_is_fresh(x, sizeof(int) * 10) && /* `x` is not fresh anymore. */
+    /* x is not fresh because it was seen by the preconditions. */
+    !__CPROVER_is_fresh(x, sizeof(int) * 10) &&
     x[9] == 113 &&
     return_ok(__CPROVER_return_value, x))
 // clang-format on

@@ -12,9 +12,9 @@ int foo(int *x, int *y)
     *x > 0 &&
     *x < 4)
   __CPROVER_ensures(
-    x != NULL &&
-    !__CPROVER_is_fresh(x, sizeof(int)) &&
     __CPROVER_is_fresh(y, sizeof(int)) &&
+    !__CPROVER_is_fresh(x, sizeof(int)) &&
+    x != NULL &&
     x != y &&
     __CPROVER_return_value == *x + 5)
 // clang-format on
