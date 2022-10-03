@@ -178,13 +178,9 @@ void dfcc_dsl_contract_handlert::check_signature_compat(
   const irep_idt &pure_contract_id,
   const code_typet &pure_contract_type)
 {
-  // we consider that the return value is used if the contract has a return type
-  bool compatible = function_is_type_compatible(
-    pure_contract_type.return_type().is_not_nil() ||
-      contract_type.return_type().is_not_nil(),
-    pure_contract_type,
-    contract_type,
-    ns);
+  // can we turn a call to `contract` into a call to `pure_contract` ?
+  bool compatible =
+    function_is_type_compatible(true, contract_type, pure_contract_type, ns);
 
   if(!compatible)
   {
@@ -192,10 +188,22 @@ void dfcc_dsl_contract_handlert::check_signature_compat(
                 << "' and the corresponding pure contract symbol '"
                 << pure_contract_id
                 << "' have incompatible type signatures:" << messaget::eom;
-    log.error() << "- '" << contract_id << "': " << format(contract_type)
-                << messaget::eom;
-    log.error() << "- '" << pure_contract_id
-                << "': " << format(pure_contract_type) << messaget::eom;
+    log.error() << "- contract return type "
+                << format(contract_type.return_type()) << messaget::eom;
+    for(const auto &param : contract_type.parameters())
+    {
+      log.error() << "- contract param type " << format(param.type())
+                  << messaget::eom;
+    }
+
+    log.error() << "- pure contract return type "
+                << format(pure_contract_type.return_type()) << messaget::eom;
+    for(const auto &param : pure_contract_type.parameters())
+    {
+      log.error() << "- pure contract param type " << format(param.type())
+                  << messaget::eom;
+    }
+
     log.error() << "aborting." << messaget::eom;
     throw 0;
   }
