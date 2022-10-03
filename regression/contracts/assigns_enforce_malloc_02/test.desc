@@ -1,11 +1,15 @@
 CORE
 main.c
---dfcc main --enforce-contract f1 _ --unwindset f1_wrapped_for_contract_checking.0:10
-^Invariant check failed$
-^Condition: is_loop_free
-^Reason: Loops remain in function 'f1', assigns clause checking instrumentation cannot be applied\.
-^EXIT=(127|134)$
+--dfcc main --enforce-contract f
+main.c function f
+^\[f.postcondition.\d+\] line 3 Check ensures clause of contract contract::f for function f: SUCCESS$
+^\[f.assigns.\d+\] line 7 Check that ptr is assignable: SUCCESS$
+^\[f.assigns.\d+\] line 12 Check that \*ptr is assignable: SUCCESS$
+^\[f.assigns.\d+\] line 13 Check that n is assignable: SUCCESS$
+^EXIT=0$
 ^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
 --
 --
-This test checks that an error is thrown when malloc is called within a loop.
+This test checks that objects locally malloc'd in loop are considered
+assignable.
