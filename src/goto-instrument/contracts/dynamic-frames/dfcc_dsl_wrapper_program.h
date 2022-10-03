@@ -34,7 +34,66 @@ class code_with_contract_typet;
 class conditional_target_group_exprt;
 class function_pointer_obeys_contract_exprt;
 
-/// Generates the body of a wrapper function from a DSL-style contract
+/// \brief Generates the body of a wrapper function from a DSL-style contract
+/// specified using requires, requires_contract, assigns, frees, ensures,
+/// ensures_contract clauses attached to a function symbol. The desired mode
+/// CHECK or REPLACE is given to the constructor of the class.
+///
+/// \details The body of the wrapper is divided into a number of sections
+/// represented as separate goto_programs:
+/// - \ref preamble
+///  - create is_fresh_set, requires_write_set, ensures_write_set,
+///    contract_write_set variables
+/// - \ref link_is_fresh
+///   - link the is_fresh_set to requires_write_set and ensures_write_set
+///   - in REPLACE mode, link the caller_write_set to the contract_write_set
+///     so that deallocations and allocations are reflected in the caller
+/// - \ref preconditions
+///   - evaluate preconditions, checking side effects against requires_write_set
+/// - \ref history
+///   - declare and snapshot history variables
+/// - \ref write_set_checks
+///   - populate the contract write set and check it for inclusion against
+///     the caller write set if REPLACE mode is selected.
+/// - \ref function_call
+///   - in CHECK mode
+///   ```c
+///   CALL retval = foo(params, contract_write_set);
+///   ```
+///   - in REPLACE mode
+///   ```c
+///   CALL foo::havoc(contract_write_set);
+///   CALL deallocate_freeable(contract_write_set, caller_write_set);
+///   ASSIGN retval = nondet
+///   ```
+/// - \ref link_allocated_caller
+///   in REPLACE mode, links the allocated set of the caller to the
+///   ensures_write_set, so that allocations performed by is fresh in post
+///   conditions get recorded in the caller write set and are considered as
+///   assignable for the caller (In CHECK mode, the caller write set comes from
+///   the proof harness and is NULL and ignored).
+///   ```c
+///   CALL link_allocated(ensures_write_set, caller_write_set);
+///   ```
+/// - \ref link_deallocated_contract
+///   links the deallocated set of the contract_write_set
+///   to the ensures_write_set, so that is_freed predicates can be evaluated
+///   in the post conditions.
+///   ```c
+///   CALL link_allocated(ensures_write_set, caller_write_set);
+///   ```
+/// - \ref postconditions
+///   - evaluate preconditions, checking side effects against ensures_write_set
+/// - \ref postamble
+///  - release all object sets and write set variables
+///
+/// There a private method per type of contract clause, which adds contents
+/// encoding the semantics of the clause to the appropriate section when called.
+///
+/// The public method \ref add_to_dest calls the private methods to populate the
+/// sections, and then adds the contents of these sections in order to the
+/// given destination program.
+/// ```
 class dfcc_dsl_wrapper_programt
 {
 public:
@@ -62,10 +121,6 @@ public:
     dfcc_libraryt &library,
     dfcc_instrumentt &instrument);
 
-  /// Adds the whole generated program to `dest`, which is meant to be a part of
-  /// the body of the `wrapper_symbol`.
-  void add_to_dest(goto_programt &dest);
-
   /// Adds the whole program to `dest` and the discovered function pointer
   /// contracts `dest_fp_contracts`.
   void add_to_dest(goto_programt &dest, std::set<irep_idt> &dest_fp_contracts);
@@ -89,7 +144,7 @@ protected:
   /// Symbol for the write set object derived from the contract
   const symbolt *contract_write_set_symbol_opt;
 
-  /// Symbol for the pointer the write set object derived from the contract
+  /// Symbol for the pointer to the write set object derived from the contract
   const symbolt *addr_of_contract_write_set_symbol_opt;
 
   /// Symbol for the write set used to check requires clauses for side effects
@@ -103,6 +158,12 @@ protected:
 
   /// Symbol for the pointer to the write set used to check ensures clauses
   const symbolt *addr_of_ensures_write_set_symbol_opt;
+
+  /// Symbol for the object set used to evaluate is_fresh/is_freshr predicates.
+  const symbolt *is_fresh_set_symbol_opt;
+
+  /// Symbol for the pointer to the is_fresh object set.
+  const symbolt *addr_of_is_fresh_set_symbol_opt;
 
   /// Set of required or ensured contracts for function pointers discovered
   /// when processing the contract of interest.
@@ -126,17 +187,48 @@ protected:
   // in the declaration order below.
 
   goto_programt preamble;
+  goto_programt link_is_fresh;
   goto_programt preconditions;
   goto_programt history;
   goto_programt write_set_checks;
   goto_programt function_call;
-  goto_programt link_caller_write_set;
-  goto_programt link_deallocated;
+  goto_programt link_allocated_caller;
+  goto_programt link_deallocated_contract;
   goto_programt postconditions;
   goto_programt postamble;
 
+  /// Adds the whole generated program to `dest`, which is meant to be a part of
+  /// the body of the `wrapper_symbol`.
+  void add_to_dest(goto_programt &dest);
+
   /// Encodes the empty write set used to check for side effects in requires
+  /// - Adds declaration of write set and pointer to write set to \ref preamble
+  /// - Adds initialisation function call in \ref preamble
+  /// - Adds alloc/deallocation checking assertion in \ref postamble
+  /// - Adds release function call in \ref postamble
   void encode_requires_write_set();
+
+  /// Encodes the empty write set used to check for side effects in ensures
+  /// - Adds declaration of write set and pointer to write set to \ref preamble
+  /// - Adds initialisation function call in \ref preamble
+  /// - Adds alloc/deallocation checking assertion in \ref postamble
+  /// - Adds release function call in \ref postamble
+  void encode_ensures_write_set();
+
+  /// Encodes the write set of the contract being checked/replaced
+  /// (populated by calling functions provided in contract_functions)
+  /// - Adds declaration of write set and pointer to write set to \ref preamble
+  /// - Adds initialisation function call in \ref write_set_checks
+  /// - Adds contract::assigns and contract::frees function call
+  /// in \ref write_set_checks
+  /// - Adds release function call in \ref postamble
+  void encode_contract_write_set();
+
+  /// Encodes the object set used to evaluate is fresh predicates,
+  /// - Adds declaration of object set and pointer to set to \ref preamble
+  /// - Adds initialisation function call in \ref preamble
+  /// - Adds release function call in \ref postamble
+  void encode_is_fresh_set();
 
   /// Encodes preconditions, instruments them to check for side effects
   void encode_requires_clauses();
@@ -144,18 +236,11 @@ protected:
   /// Encodes function pointer preconditions
   void encode_requires_contract_clauses();
 
-  /// Encodes the empty write set used to check for side effects in ensures
-  void encode_ensures_write_set();
-
   /// Encodes postconditions, instruments them to check for side effects
   void encode_ensures_clauses();
 
   /// Encodes function pointer postconditions
   void encode_ensures_contract_clauses();
-
-  /// Encodes the write set of the contract being checked/replaced
-  /// (gets populated by calling functions provided in contract_functions)
-  void encode_contract_write_set();
 
   /// Translates a function_pointer_obeys_contract_exprt into an assertion
   /// ```

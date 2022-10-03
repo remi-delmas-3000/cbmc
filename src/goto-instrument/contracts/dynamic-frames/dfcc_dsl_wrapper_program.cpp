@@ -57,6 +57,8 @@ dfcc_dsl_wrapper_programt::dfcc_dsl_wrapper_programt(
     addr_of_requires_write_set_symbol_opt(nullptr),
     ensures_write_set_symbol_opt(nullptr),
     addr_of_ensures_write_set_symbol_opt(nullptr),
+    is_fresh_set_symbol_opt(nullptr),
+    addr_of_is_fresh_set_symbol_opt(nullptr),
     function_pointer_contracts(),
     goto_model(goto_model),
     log(log),
@@ -143,6 +145,28 @@ dfcc_dsl_wrapper_programt::dfcc_dsl_wrapper_programt(
     wrapper_symbol.module,
     false);
 
+  // generate local write set symbol to check for side effects in pre and post
+  // conditions
+  is_fresh_set_symbol_opt = &utils.create_symbol(
+    library.dfcc_type[dfcc_typet::OBJ_SET],
+    id2string(wrapper_symbol.name),
+    "__is_fresh_set",
+    wrapper_symbol.location,
+    wrapper_symbol.mode,
+    wrapper_symbol.module,
+    false);
+
+  // generate local write set symbol to check for side effects in pre and post
+  // conditions
+  addr_of_is_fresh_set_symbol_opt = &utils.create_symbol(
+    library.dfcc_type[dfcc_typet::OBJ_SET_PTR],
+    id2string(wrapper_symbol.name),
+    "__address_of_is_fresh_set",
+    wrapper_symbol.location,
+    wrapper_symbol.mode,
+    wrapper_symbol.module,
+    false);
+
   // build contract_lambda_parameters
   if(contract_code_type.return_type().id() != ID_empty)
   {
@@ -158,11 +182,12 @@ dfcc_dsl_wrapper_programt::dfcc_dsl_wrapper_programt(
 
   // encode all contract clauses
   encode_requires_write_set();
+  encode_ensures_write_set();
+  encode_is_fresh_set();
   encode_requires_clauses();
   encode_requires_contract_clauses();
   encode_contract_write_set();
   encode_function_call();
-  encode_ensures_write_set();
   encode_ensures_clauses();
   encode_ensures_contract_clauses();
 }
@@ -180,12 +205,13 @@ void dfcc_dsl_wrapper_programt::add_to_dest(goto_programt &dest)
 {
   // add code to dest in the right order
   dest.destructive_append(preamble);
+  dest.destructive_append(link_is_fresh);
   dest.destructive_append(preconditions);
   dest.destructive_append(history);
   dest.destructive_append(write_set_checks);
   dest.destructive_append(function_call);
-  dest.destructive_append(link_caller_write_set);
-  dest.destructive_append(link_deallocated);
+  dest.destructive_append(link_allocated_caller);
+  dest.destructive_append(link_deallocated_contract);
   dest.destructive_append(postconditions);
   dest.destructive_append(postamble);
 }
@@ -198,7 +224,7 @@ void dfcc_dsl_wrapper_programt::encode_requires_write_set()
   PRECONDITION(requires_write_set_symbol_opt);
   PRECONDITION(addr_of_requires_write_set_symbol_opt);
 
-  // call set_create(
+  // call write_set_create(
   //   requires_write_set,
   //   assigns_size = 0,
   //   frees_size = 0,
@@ -260,11 +286,10 @@ void dfcc_dsl_wrapper_programt::encode_requires_write_set()
   preamble.add(goto_programt::make_function_call(call));
 
   // check for absence of allocation/deallocation in requires clauses
-  // ```
+  // ```c
   // DECL __check_no_alloc: bool;
-  // CALL __check_no_alloc =
-  // check_empty_alloc_dealloct(write_set, lhs, sizeof(lhs));
-  // ASSERT(__check_no_alloc);
+  // CALL __check_no_alloc = check_empty_alloc_dealloc(write_set);
+  // ASSERT __check_no_alloc;
   // DEAD __check_no_alloc: bool;
   // ```
   auto check_var = get_fresh_aux_symbol(
@@ -313,7 +338,7 @@ void dfcc_dsl_wrapper_programt::encode_ensures_write_set()
   PRECONDITION(ensures_write_set_symbol_opt);
   PRECONDITION(addr_of_ensures_write_set_symbol_opt);
 
-  // call set_create(
+  // call write_set_create(
   //   ensures_write_set,
   //   assigns_size = 0,
   //   frees_size = 0,
@@ -374,32 +399,31 @@ void dfcc_dsl_wrapper_programt::encode_ensures_write_set()
 
   preamble.add(goto_programt::make_function_call(call));
 
-  // call link_is_freshr_allocated(pre_post, caller) if we are doing replacement
+  // call link_allocated(pre_post, caller) if in REPLACE MODE
   if(contract_mode == dfcc_contract_modet::REPLACE)
   {
     auto function_symbol =
-      library.dfcc_fun_symbol.at(dfcc_funt::LINK_IS_FRESHR_ALLOCATED)
+      library.dfcc_fun_symbol.at(dfcc_funt::LINK_ALLOCATED)
         .symbol_expr();
     code_function_callt call(function_symbol);
     auto &arguments = call.arguments();
     arguments.emplace_back(address_of_write_set);
     arguments.emplace_back(caller_write_set_symbol.symbol_expr());
-    link_caller_write_set.add(goto_programt::make_function_call(call));
+    link_allocated_caller.add(goto_programt::make_function_call(call));
   }
 
   // check for absence of allocation/deallocation in contract clauses
-  // ```
+  // ```c
   // DECL __check_no_alloc: bool;
-  // CALL __check_no_alloc =
-  /// check_empty_alloc_dealloct(write_set, lhs, sizeof(lhs));
-  // ASSERT(__check_no_alloc);
+  // CALL __check_no_alloc = check_empty_alloc_dealloc(write_set);
+  // ASSERT __check_no_alloc;
   // DEAD __check_no_alloc: bool;
   // ```
   auto check_var = get_fresh_aux_symbol(
                      bool_typet(),
                      id2string(wrapper_symbol.name),
                      "__no_alloc_dealloc_in_ensures_clauses",
-                     source_locationt{}, // TODO add property class and comment
+                     source_locationt{}, // TODO add property class and location
                      wrapper_symbol.mode,
                      goto_model.symbol_table)
                      .symbol_expr();
@@ -421,14 +445,13 @@ void dfcc_dsl_wrapper_programt::encode_ensures_write_set()
   postamble.add(goto_programt::make_assertion(check_var, sl));
   postamble.add(goto_programt::make_dead(check_var));
 
-  // generate write set release and DEAD instructions
-  {
-    code_function_callt call(
-      library.dfcc_fun_symbol.at(dfcc_funt::WRITE_SET_RELEASE).symbol_expr(),
-      {address_of_write_set});
-    postamble.add(goto_programt::make_function_call(call));
-    postamble.add(goto_programt::make_dead(write_set));
-  }
+  // generate write set release
+  postamble.add(goto_programt::make_function_call(code_function_callt{
+    library.dfcc_fun_symbol.at(dfcc_funt::WRITE_SET_RELEASE).symbol_expr(),
+    {address_of_write_set}}));
+
+  // declare write set DEAD
+  postamble.add(goto_programt::make_dead(write_set));
   log.debug() << "<-dfcc_dsl_wrapper_programt::encode_ensures_write_set()"
               << messaget::eom;
 }
@@ -456,7 +479,7 @@ void dfcc_dsl_wrapper_programt::encode_contract_write_set()
   const auto address_of_requires_write_set =
     addr_of_requires_write_set_symbol_opt->symbol_expr();
 
-  // call set_create
+  // call write_set_create
   {
     auto function_symbol =
       library.dfcc_fun_symbol.at(dfcc_funt::WRITE_SET_CREATE).symbol_expr();
@@ -479,6 +502,8 @@ void dfcc_dsl_wrapper_programt::encode_contract_write_set()
     const bool replace = contract_mode == dfcc_contract_modet::REPLACE;
     arguments.emplace_back(
       (replace ? (exprt)true_exprt() : (exprt)false_exprt()));
+
+    // not analysing ensures or requires clauses, set all context flags to false
 
     // assume_requires_ctx
     arguments.emplace_back((exprt)false_exprt());
@@ -556,6 +581,53 @@ void dfcc_dsl_wrapper_programt::encode_contract_write_set()
               << messaget::eom;
 }
 
+void dfcc_dsl_wrapper_programt::encode_is_fresh_set()
+{
+  log.debug() << "->dfcc_dsl_wrapper_programt::encode_is_fresh_set()"
+              << messaget::eom;
+
+  PRECONDITION(is_fresh_set_symbol_opt);
+  PRECONDITION(addr_of_is_fresh_set_symbol_opt);
+
+  const auto object_set = is_fresh_set_symbol_opt->symbol_expr();
+  preamble.add(goto_programt::make_decl(object_set));
+
+  const auto address_of_object_set =
+    addr_of_is_fresh_set_symbol_opt->symbol_expr();
+  preamble.add(goto_programt::make_decl(address_of_object_set));
+  preamble.add(goto_programt::make_assignment(
+    address_of_object_set, address_of_exprt(object_set)));
+
+  // CALL obj_set_create_indexed_by_object_id(is_fresh_set) in preamble
+  preamble.add(goto_programt::make_function_call(code_function_callt{
+    library.dfcc_fun_symbol.at(dfcc_funt::OBJ_SET_CREATE_INDEXED_BY_OBJECT_ID)
+      .symbol_expr(),
+    {address_of_object_set}}));
+
+  // link to requires write set
+  link_is_fresh.add(goto_programt::make_function_call(code_function_callt(
+    library.dfcc_fun_symbol.at(dfcc_funt::LINK_IS_FRESH).symbol_expr(),
+    {addr_of_requires_write_set_symbol_opt->symbol_expr(),
+     address_of_object_set})));
+
+  // link to ensures write set
+  link_is_fresh.add(goto_programt::make_function_call(code_function_callt(
+    library.dfcc_fun_symbol.at(dfcc_funt::LINK_IS_FRESH).symbol_expr(),
+    {addr_of_ensures_write_set_symbol_opt->symbol_expr(),
+     address_of_object_set})));
+
+  // release call in postamble
+  postamble.add(goto_programt::make_function_call(code_function_callt(
+    library.dfcc_fun_symbol.at(dfcc_funt::OBJ_SET_RELEASE).symbol_expr(),
+    {address_of_object_set})));
+
+  // DEAD instructions in postamble
+  postamble.add(goto_programt::make_dead(object_set));
+
+  log.debug() << "<-dfcc_dsl_wrapper_programt::encode_is_fresh_set()"
+              << messaget::eom;
+}
+
 void dfcc_dsl_wrapper_programt::encode_requires_clauses()
 {
   log.debug() << "->dfcc_dsl_wrapper_programt::encode_requires_clauses()"
@@ -563,7 +635,7 @@ void dfcc_dsl_wrapper_programt::encode_requires_clauses()
   // we use this empty requires write set to check for the absence of side
   // effects in the requires clauses
   PRECONDITION(addr_of_requires_write_set_symbol_opt);
-  const auto &wrapper_id = wrapped_symbol.name;
+  const auto &wrapper_id = wrapper_symbol.name;
   const auto &language_mode = utils.get_function_symbol(wrapper_id).mode;
 
   code_contractst code_contracts(goto_model, log);
@@ -715,7 +787,7 @@ void dfcc_dsl_wrapper_programt::encode_ensures_clauses()
     arguments.emplace_back(address_of_ensures_write_set);
     arguments.emplace_back(
       addr_of_contract_write_set_symbol_opt->symbol_expr());
-    link_deallocated.add(goto_programt::make_function_call(call));
+    link_deallocated_contract.add(goto_programt::make_function_call(call));
   }
 
   dfcc_is_freeablet is_freeable(library, log);
@@ -821,7 +893,7 @@ void dfcc_dsl_wrapper_programt::assert_function_pointer_obeys_contract(
   source_locationt loc(expr.source_location());
   loc.set_property_class(property_class);
   std::stringstream comment;
-  comment << "Assert function pointer '"
+  comment << "Check that function pointer '"
           << from_expr_using_mode(
                ns, contract_symbol.mode, expr.function_pointer())
           << "' obeys contract '"
@@ -850,7 +922,7 @@ void dfcc_dsl_wrapper_programt::assume_function_pointer_obeys_contract(
 
   source_locationt loc(expr.source_location());
   std::stringstream comment;
-  comment << "Assume function pointer '"
+  comment << "Assume that function pointer '"
           << from_expr_using_mode(
                ns, contract_symbol.mode, expr.function_pointer())
           << "' obeys contract '"
