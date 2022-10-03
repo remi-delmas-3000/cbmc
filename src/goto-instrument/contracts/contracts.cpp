@@ -1334,10 +1334,11 @@ void code_contractst::assert_function_pointer_obeys_contract(
   const irep_idt &mode,
   goto_programt &dest)
 {
+  // The function pointer must point to the contract symbol to satisfy the check
   source_locationt loc(expr.source_location());
   loc.set_property_class(property_class);
   std::stringstream comment;
-  comment << "Assert function pointer '"
+  comment << "Check that function pointer '"
           << from_expr_using_mode(ns, mode, expr.function_pointer())
           << "' obeys contract '"
           << from_expr_using_mode(ns, mode, expr.address_of_contract()) << "'";
@@ -1357,7 +1358,7 @@ void code_contractst::assume_function_pointer_obeys_contract(
 {
   source_locationt loc(expr.source_location());
   std::stringstream comment;
-  comment << "Assume function pointer '"
+  comment << "Assume that function pointer '"
           << from_expr_using_mode(ns, mode, expr.function_pointer())
           << "' obeys contract '"
           << from_expr_using_mode(ns, mode, expr.address_of_contract()) << "'";
