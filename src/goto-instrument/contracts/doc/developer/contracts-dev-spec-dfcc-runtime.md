@@ -163,7 +163,7 @@ Direct links to @ref __CPROVER_contracts_write_set_t operations documentation
 - @ref __CPROVER_contracts_write_set_check_assigns_clause_inclusion
 - @ref __CPROVER_contracts_write_set_check_frees_clause_inclusion
 - @ref __CPROVER_contracts_write_set_deallocate_freeable
-- @ref __CPROVER_contracts_link_is_freshr_allocated
+- @ref __CPROVER_contracts_link_allocated
 - @ref __CPROVER_contracts_link_deallocated
 - @ref __CPROVER_contracts_is_freshr
 - @ref __CPROVER_contracts_write_set_havoc_get_assignable_target
