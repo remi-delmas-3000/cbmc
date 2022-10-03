@@ -1,8 +1,8 @@
 CORE
 main.c
 --dfcc main --enforce-contract goo
-^Function 'goo' was not found in the GOTO program.$
-^EXIT=6$
+^Function to check 'goo' either not found or has no body$
+^EXIT=(0|127|134|137)$
 ^SIGNAL=0$
 --
 --
