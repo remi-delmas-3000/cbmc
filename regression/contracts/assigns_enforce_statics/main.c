@@ -1,6 +1,6 @@
 static int x = 0;
 
-void foo() __CPROVER_assigns(x)
+void foo() __CPROVER_assigns()
 {
   int *y = &x;
 
@@ -16,4 +16,5 @@ void foo() __CPROVER_assigns(x)
 int main()
 {
   foo();
+  return 0;
 }
