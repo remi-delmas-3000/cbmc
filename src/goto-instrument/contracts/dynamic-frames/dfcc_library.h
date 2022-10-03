@@ -62,6 +62,8 @@ enum class dfcc_funt
   OBJ_SET_CREATE_INDEXED_BY_OBJECT_ID,
   /// \see __CPROVER_contracts_obj_set_create_append
   OBJ_SET_CREATE_APPEND,
+  /// \see __CPROVER_contracts_obj_set_release
+  OBJ_SET_RELEASE,
   /// \see __CPROVER_contracts_obj_set_add
   OBJ_SET_ADD,
   /// \see __CPROVER_contracts_obj_set_append
@@ -118,8 +120,10 @@ enum class dfcc_funt
   WRITE_SET_HAVOC_WHOLE_OBJECT,
   /// \see __CPROVER_contracts_write_set_havoc_slice
   WRITE_SET_HAVOC_SLICE,
-  /// \see __CPROVER_contracts_link_is_freshr_allocated
-  LINK_IS_FRESHR_ALLOCATED,
+  /// \see __CPROVER_contracts_link_is_fresh
+  LINK_IS_FRESH,
+  /// \see __CPROVER_contracts_link_allocated
+  LINK_ALLOCATED,
   /// \see __CPROVER_contracts_link_deallocated
   LINK_DEALLOCATED,
   /// \see __CPROVER_contracts_is_freshr
