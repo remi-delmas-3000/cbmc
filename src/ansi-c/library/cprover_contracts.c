@@ -68,9 +68,9 @@ typedef struct __CPROVER_contracts_write_set_t
   /// \brief Set of objects deallocated by the function under analysis
   /// (indexed mode)
   __CPROVER_contracts_obj_set_t deallocated;
-  /// \brief Object set supporting the is_freshr predicate checks
+  /// \brief Pointer to object set supporting the is_freshr predicate checks
   /// (indexed mode)
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   /// \brief Object set recording the is_freshr allocations in post conditions
   /// (replacement mode only)
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
@@ -166,7 +166,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -188,7 +188,7 @@ inline void __CPROVER_contracts_car_set_create(
   __CPROVER_size_t max_elems)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_car_set_t)),
     "set writable");
@@ -238,7 +238,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -274,7 +274,7 @@ __CPROVER_HIDE:;
 #pragma CPROVER check disable "signed-overflow"
 #pragma CPROVER check disable "undefined-shift"
 #pragma CPROVER check disable "conversion"
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert((set != 0) & (idx < set->max_elems), "no OOB access");
 #endif
   __CPROVER_assert(
@@ -336,7 +336,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -411,7 +411,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -492,7 +492,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -522,7 +522,7 @@ inline void __CPROVER_contracts_obj_set_create_indexed_by_object_id(
   __CPROVER_contracts_obj_set_ptr_t set)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_obj_set_t)),
     "set writable");
@@ -581,7 +581,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -604,7 +604,7 @@ inline void __CPROVER_contracts_obj_set_create_append(
   __CPROVER_size_t max_elems)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_obj_set_t)),
     "set writable");
@@ -615,6 +615,72 @@ __CPROVER_HIDE:;
   set->is_empty = 1;
   set->indexed_by_object_id = 0;
   set->elems = __CPROVER_allocate(set->max_elems * sizeof(*(set->elems)), 1);
+}
+
+/* FUNCTION: __CPROVER_contracts_obj_set_release */
+
+#ifndef __CPROVER_contracts_write_set_t_defined
+#  define __CPROVER_contracts_write_set_t_defined
+
+typedef struct __CPROVER_contracts_car_t
+{
+  __CPROVER_bool is_writable;
+  __CPROVER_size_t size;
+  void *lb;
+  void *ub;
+} __CPROVER_contracts_car_t;
+
+typedef struct __CPROVER_contracts_car_set_t
+{
+  __CPROVER_size_t max_elems;
+  __CPROVER_contracts_car_t *elems;
+} __CPROVER_contracts_car_set_t;
+
+typedef __CPROVER_contracts_car_set_t *__CPROVER_contracts_car_set_ptr_t;
+
+typedef struct __CPROVER_contracts_obj_set_t
+{
+  __CPROVER_size_t max_elems;
+  __CPROVER_size_t watermark;
+  __CPROVER_size_t nof_elems;
+  __CPROVER_bool is_empty;
+  __CPROVER_bool indexed_by_object_id;
+  void **elems;
+} __CPROVER_contracts_obj_set_t;
+
+typedef __CPROVER_contracts_obj_set_t *__CPROVER_contracts_obj_set_ptr_t;
+
+typedef struct __CPROVER_contracts_write_set_t
+{
+  __CPROVER_contracts_car_set_t contract_assigns;
+  __CPROVER_contracts_obj_set_t contract_frees;
+  __CPROVER_contracts_obj_set_t contract_frees_replacement;
+  __CPROVER_contracts_obj_set_t allocated;
+  __CPROVER_contracts_obj_set_t deallocated;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
+  __CPROVER_contracts_obj_set_ptr_t linked_allocated;
+  __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
+  __CPROVER_bool replacement;
+  __CPROVER_bool assume_requires_ctx;
+  __CPROVER_bool assert_requires_ctx;
+  __CPROVER_bool assume_ensures_ctx;
+  __CPROVER_bool assert_ensures_ctx;
+} __CPROVER_contracts_write_set_t;
+
+typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
+#endif
+
+/// @brief Releases resources used by \p set.
+void __CPROVER_contracts_obj_set_release(__CPROVER_contracts_obj_set_ptr_t set)
+{
+__CPROVER_HIDE:;
+#ifdef DFCC_DEBUG
+  __CPROVER_assert(
+    __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_obj_set_t)),
+    "set readable");
+  __CPROVER_assert(__CPROVER_rw_ok(&(set->elems), 0), "set->elems writable");
+#endif
+  __CPROVER_deallocate(set->elems);
 }
 
 /* FUNCTION: __CPROVER_contracts_obj_set_add */
@@ -657,7 +723,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -679,12 +745,11 @@ inline void __CPROVER_contracts_obj_set_add(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
-  __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
-  __CPROVER_assert(
-    __CPROVER_POINTER_OBJECT(ptr) < set->max_elems, "no OOB access");
-#endif
   __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+#ifdef DFCC_DEBUG
+  __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
+  __CPROVER_assert(object_id < set->max_elems, "no OOB access");
+#endif
   set->nof_elems =
     (set->elems[object_id] != 0) ? set->nof_elems : set->nof_elems + 1;
   set->elems[object_id] = ptr;
@@ -731,7 +796,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -753,7 +818,7 @@ inline void __CPROVER_contracts_obj_set_append(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(!(set->indexed_by_object_id), "not indexed by object id");
   __CPROVER_assert(set->watermark < set->max_elems, "no OOB access");
 #endif
@@ -803,7 +868,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -825,12 +890,11 @@ inline void __CPROVER_contracts_obj_set_remove(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
-  __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
-  __CPROVER_assert(
-    __CPROVER_POINTER_OBJECT(ptr) < set->max_elems, "no OOB access");
-#endif
   __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+#ifdef DFCC_DEBUG
+  __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
+  __CPROVER_assert(object_id < set->max_elems, "no OOB access");
+#endif
   set->nof_elems = set->elems[object_id] ? set->nof_elems - 1 : set->nof_elems;
   set->is_empty = set->nof_elems == 0;
   set->elems[object_id] = 0;
@@ -876,7 +940,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -899,12 +963,12 @@ inline __CPROVER_bool __CPROVER_contracts_obj_set_contains(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+#ifdef DFCC_DEBUG
   __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
-  __CPROVER_assert(
-    __CPROVER_POINTER_OBJECT(ptr) < set->max_elems, "no OOB access");
+  __CPROVER_assert(object_id < set->max_elems, "no OOB access");
 #endif
-  return set->elems[__CPROVER_POINTER_OBJECT(ptr)] != 0;
+  return set->elems[object_id] != 0;
 }
 
 /* FUNCTION: __CPROVER_contracts_obj_set_contains_exact */
@@ -947,7 +1011,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -969,12 +1033,12 @@ inline __CPROVER_bool __CPROVER_contracts_obj_set_contains_exact(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+#ifdef DFCC_DEBUG
   __CPROVER_assert(set->indexed_by_object_id, "indexed by object id");
-  __CPROVER_assert(
-    __CPROVER_POINTER_OBJECT(ptr) < set->max_elems, "no OOB access");
+  __CPROVER_assert(object_id < set->max_elems, "no OOB access");
 #endif
-  return set->elems[__CPROVER_POINTER_OBJECT(ptr)] == ptr;
+  return set->elems[object_id] == ptr;
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_create */
@@ -1017,7 +1081,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1065,7 +1129,7 @@ void __CPROVER_contracts_write_set_create(
   __CPROVER_bool assert_ensures_ctx)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_w_ok(set, sizeof(__CPROVER_contracts_write_set_t)),
     "set writable");
@@ -1086,9 +1150,9 @@ __CPROVER_HIDE:;
   }
   __CPROVER_contracts_obj_set_create_indexed_by_object_id(&(set->allocated));
   __CPROVER_contracts_obj_set_create_indexed_by_object_id(&(set->deallocated));
-  __CPROVER_contracts_obj_set_create_indexed_by_object_id(
-    &(set->is_freshr_seen));
+  set->linked_is_fresh = 0;
   set->linked_allocated = 0;
+  set->linked_deallocated = 0;
   set->assume_requires_ctx = assume_requires_ctx;
   set->assert_requires_ctx = assert_requires_ctx;
   set->assume_ensures_ctx = assume_ensures_ctx;
@@ -1135,7 +1199,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1153,7 +1217,7 @@ void __CPROVER_contracts_write_set_release(
   __CPROVER_contracts_write_set_ptr_t set)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_write_set_t)),
     "set readable");
@@ -1171,8 +1235,6 @@ __CPROVER_HIDE:;
     __CPROVER_rw_ok(&(set->allocated.elems), 0), "allocated writable");
   __CPROVER_assert(
     __CPROVER_rw_ok(&(set->deallocated.elems), 0), "deallocated writable");
-  __CPROVER_assert(
-    __CPROVER_rw_ok(&(set->deallocated.elems), 0), "is_freshr_seen writable");
 #endif
   __CPROVER_deallocate(set->contract_assigns.elems);
   __CPROVER_deallocate(set->contract_frees.elems);
@@ -1182,9 +1244,8 @@ __CPROVER_HIDE:;
   }
   __CPROVER_deallocate(set->allocated.elems);
   __CPROVER_deallocate(set->deallocated.elems);
-  __CPROVER_deallocate(set->is_freshr_seen.elems);
-  // do not free set->deallocated_linked->elems
-  // since it is owned by another write_set instance
+  // do not free set->linked_is_fresh->elems or set->deallocated_linked->elems
+  // since they are owned by someone else.
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_insert_assignable */
@@ -1227,7 +1288,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1302,7 +1363,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1384,7 +1445,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1466,7 +1527,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1545,7 +1606,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1579,12 +1640,35 @@ __CPROVER_HIDE:;
   // preconditions will be checked if there is an actual attempt
   // to free the pointer.
 
-  // store pointer
+// store pointer
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+#ifdef DFCC_DEBUG
+  // manually inlined below
   __CPROVER_contracts_obj_set_add(&(set->contract_frees), ptr);
+  __CPROVER_assert(object_id < set->contract_frees.max_elems, "no OOB access");
+#else
+  set->contract_frees.nof_elems = (set->contract_frees.elems[object_id] != 0)
+                                    ? set->contract_frees.nof_elems
+                                    : set->contract_frees.nof_elems + 1;
+  set->contract_frees.elems[object_id] = ptr;
+  set->contract_frees.is_empty = 0;
+#endif
 
   // append pointer if available
+#ifdef DFCC_DEBUG
   if(set->replacement)
     __CPROVER_contracts_obj_set_append(&(set->contract_frees_replacement), ptr);
+#else
+  if(set->replacement)
+  {
+    set->contract_frees_replacement.nof_elems =
+      set->contract_frees_replacement.watermark;
+    set->contract_frees_replacement
+      .elems[set->contract_frees_replacement.watermark] = ptr;
+    set->contract_frees_replacement.watermark += 1;
+    set->contract_frees_replacement.is_empty = 0;
+  }
+#endif
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_add_allocated */
@@ -1627,7 +1711,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1651,7 +1735,17 @@ void __CPROVER_contracts_write_set_add_allocated(
   void *ptr)
 {
 __CPROVER_HIDE:;
+#if DFCC_DEBUG
+  // call inlined below
   __CPROVER_contracts_obj_set_add(&(set->allocated), ptr);
+#else
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+  set->allocated.nof_elems = (set->allocated.elems[object_id] != 0)
+                               ? set->allocated.nof_elems
+                               : set->allocated.nof_elems + 1;
+  set->allocated.elems[object_id] = ptr;
+  set->allocated.is_empty = 0;
+#endif
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_record_dead */
@@ -1694,7 +1788,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1723,7 +1817,17 @@ void __CPROVER_contracts_write_set_record_dead(
   void *ptr)
 {
 __CPROVER_HIDE:;
+#ifdef DFCC_DEBUG
+  // manually inlined below
   __CPROVER_contracts_obj_set_remove(&(set->allocated), ptr);
+#else
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+  set->allocated.nof_elems = set->allocated.elems[object_id]
+                               ? set->allocated.nof_elems - 1
+                               : set->allocated.nof_elems;
+  set->allocated.is_empty = set->allocated.nof_elems == 0;
+  set->allocated.elems[object_id] = 0;
+#endif
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_record_deallocated */
@@ -1766,7 +1870,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1791,11 +1895,22 @@ void __CPROVER_contracts_write_set_record_deallocated(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(set->replacement == 0, "!replacement");
 #endif
-  // we need to record the deallocation to evaluate post conditions
+
+  // we record the deallocation to be able to evaluate is_freed post conditions
+#if DFCC_DEBUG
+  // Manually inlined below
   __CPROVER_contracts_obj_set_add(&(set->deallocated), ptr);
+#else
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+  set->deallocated.nof_elems = (set->deallocated.elems[object_id] != 0)
+                                 ? set->deallocated.nof_elems
+                                 : set->deallocated.nof_elems + 1;
+  set->deallocated.elems[object_id] = ptr;
+  set->deallocated.is_empty = 0;
+#endif
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_check_allocated_deallocated_is_empty */
@@ -1838,7 +1953,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1903,7 +2018,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -1923,24 +2038,22 @@ inline __CPROVER_bool __CPROVER_contracts_car_set_contains(
   __CPROVER_contracts_car_set_ptr_t,
   __CPROVER_contracts_car_t);
 
-#if 0
-/// \brief Checks if an assignment to the range of bytes starting at \p ptr of
-/// size \p size is allowed by \p set.
+/// \brief Checks if an assignment to the range of bytes starting at \p ptr and
+/// of \p size bytes is allowed according to \p set.
 ///
 /// \param[in] set Write set to check the assignment against
 /// \param[in] ptr Start address of the assigned range
 /// \param[in] size Size of the assigned range in bytes
-/// \return True iff the range of bytes starting at \p ptr of size \p size is
-/// contained \p set->allocated or in \p set->contract_assigns.
+/// \return True iff the range of bytes starting at \p ptr of \p size bytes is
+/// contained in \p set->allocated or \p set->contract_assigns.
 inline __CPROVER_bool __CPROVER_contracts_write_set_check_assignment(
   __CPROVER_contracts_write_set_ptr_t set,
   void *ptr,
   __CPROVER_size_t size)
+#if DFCC_DEBUG
 {
 __CPROVER_HIDE:;
-#  ifdef DFCC_SELF_CHECK
   __CPROVER_assert(set->replacement == 0, "!replacement");
-#  endif
   __CPROVER_assert(
     ((ptr == 0) | __CPROVER_rw_ok(ptr, size)),
     "ptr NULL or writable up to size");
@@ -1959,25 +2072,8 @@ __CPROVER_HIDE:;
   return __CPROVER_contracts_car_set_contains(&(set->contract_assigns), car);
 }
 #else
-
-/// \brief Checks if an assignment to the range of bytes starting at \p ptr and
-/// of \p size bytes is allowed according to \p set.
-///
-/// \param[in] set Write set to check the assignment against
-/// \param[in] ptr Start address of the assigned range
-/// \param[in] size Size of the assigned range in bytes
-/// \return True iff the range of bytes starting at \p ptr of \p size bytes is
-/// contained in \p set->allocated or \p set->contract_assigns.
-inline __CPROVER_bool __CPROVER_contracts_write_set_check_assignment(
-  __CPROVER_contracts_write_set_ptr_t set,
-  void *ptr,
-  __CPROVER_size_t size)
 {
 __CPROVER_HIDE:;
-#  ifdef DFCC_SELF_CHECK
-  __CPROVER_assert(set->replacement == 0, "!replacement");
-#  endif
-
 #  pragma CPROVER check push
 #  pragma CPROVER check disable "pointer"
 #  pragma CPROVER check disable "pointer-primitive"
@@ -1985,11 +2081,6 @@ __CPROVER_HIDE:;
 #  pragma CPROVER check disable "signed-overflow"
 #  pragma CPROVER check disable "undefined-shift"
 #  pragma CPROVER check disable "conversion"
-
-  __CPROVER_assert(
-    (ptr == 0) | (__CPROVER_POINTER_OBJECT(ptr) < set->allocated.max_elems),
-    "no OOB access");
-
   __CPROVER_assert(
     ((ptr == 0) | __CPROVER_rw_ok(ptr, size)),
     "ptr NULL or writable up to size");
@@ -1998,7 +2089,7 @@ __CPROVER_HIDE:;
   if(ptr == 0)
     return 0;
 
-  // is ptr pointing to a locally allocated object ?
+  // is ptr pointing within some a locally allocated object ?
   if(set->allocated.elems[__CPROVER_POINTER_OBJECT(ptr)] != 0)
     return 1;
 
@@ -2010,7 +2101,9 @@ __CPROVER_HIDE:;
   __CPROVER_assert(
     size < __CPROVER_max_malloc_size,
     "CAR size is less than __CPROVER_max_malloc_size");
+
   __CPROVER_ssize_t offset = __CPROVER_POINTER_OFFSET(ptr);
+
   __CPROVER_assert(
     !(offset > 0) |
       ((__CPROVER_size_t)offset + size < __CPROVER_max_malloc_size),
@@ -2025,7 +2118,7 @@ SET_CHECK_ASSIGNMENT_LOOP:
   {
     incl |=
       elem->is_writable & __CPROVER_same_object(elem->lb, ptr) &
-      (__CPROVER_POINTER_OFFSET(elem->lb) <= __CPROVER_POINTER_OFFSET(ptr)) &
+      (__CPROVER_POINTER_OFFSET(elem->lb) <= offset) &
       (__CPROVER_POINTER_OFFSET(ub) <= __CPROVER_POINTER_OFFSET(elem->ub));
     ++elem;
     --idx;
@@ -2075,7 +2168,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2153,7 +2246,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2231,7 +2324,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2317,7 +2410,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2394,7 +2487,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2406,9 +2499,6 @@ typedef struct __CPROVER_contracts_write_set_t
 
 typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
 #endif
-
-__CPROVER_bool
-__CPROVER_contracts_obj_set_contains(__CPROVER_contracts_obj_set_ptr_t, void *);
 
 /// \brief Checks if the deallocation of \p ptr is allowed according to \p set.
 ///
@@ -2425,17 +2515,21 @@ __CPROVER_bool __CPROVER_contracts_write_set_check_deallocate(
   void *ptr)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(set->replacement == 0, "!replacement");
 #endif
-  // NULL pointers can always be passed to free
-  if(!ptr)
-    return 1;
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
 
-  // is this one of the recorded pointers ?
-  return __CPROVER_contracts_obj_set_contains_exact(
-           &(set->contract_frees), ptr) ||
-         __CPROVER_contracts_obj_set_contains_exact(&(set->allocated), ptr);
+#ifdef DFCC_DEBUG
+  __CPROVER_assert(
+    set->contract_frees.indexed_by_object_id,
+    "set->contract_frees is indexed by object id");
+  __CPROVER_assert(
+    set->allocated.indexed_by_object_id,
+    "set->allocated is indexed by object id");
+#endif
+  return (ptr == 0) || (set->contract_frees.elems[object_id] == ptr) ||
+         (set->allocated.elems[object_id] == ptr);
 }
 
 /* FUNCTION: __CPROVER_contracts_write_set_check_assigns_clause_inclusion */
@@ -2478,7 +2572,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2508,7 +2602,7 @@ __CPROVER_contracts_write_set_check_assigns_clause_inclusion(
   __CPROVER_contracts_write_set_ptr_t candidate)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     reference->replacement == 0, "reference set in !replacement");
   __CPROVER_assert(candidate->replacement != 0, "candidate set in replacement");
@@ -2570,7 +2664,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2600,21 +2694,29 @@ __CPROVER_contracts_write_set_check_frees_clause_inclusion(
   __CPROVER_contracts_write_set_ptr_t candidate)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     reference->replacement == 0, "reference set in !replacement");
   __CPROVER_assert(candidate->replacement != 0, "candidate set in replacement");
+  __CPROVER_assert(
+    reference->contract_frees.indexed_by_object_id,
+    "reference->contract_frees is indexed by object id");
+  __CPROVER_assert(
+    reference->allocated.indexed_by_object_id,
+    "reference->allocated is indexed by object id");
 #endif
   __CPROVER_bool all_incl = 1;
   void **current = candidate->contract_frees_replacement.elems;
   __CPROVER_size_t idx = candidate->contract_frees_replacement.max_elems;
+
 SET_CHECK_FREES_CLAUSE_INCLUSION_LOOP:
   while(idx != 0)
   {
     void *ptr = *current;
-    all_incl &=
-      __CPROVER_contracts_obj_set_contains(&(reference->contract_frees), ptr) ||
-      __CPROVER_contracts_obj_set_contains(&(reference->allocated), ptr);
+    __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+    all_incl &= (ptr == 0) |
+                (reference->contract_frees.elems[object_id] == ptr) |
+                (reference->allocated.elems[object_id] == ptr);
     --idx;
     ++current;
   }
@@ -2662,7 +2764,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2699,7 +2801,7 @@ void __CPROVER_contracts_write_set_deallocate_freeable(
   __CPROVER_contracts_write_set_ptr_t target)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(set->replacement == 1, "set is in replacement");
   __CPROVER_assert(
     (target == 0) | (target->replacement == 0), "target is in !replacement");
@@ -2719,12 +2821,15 @@ SET_DEALLOCATE_FREEABLE_LOOP:
 #pragma CPROVER check disable "signed-overflow"
 #pragma CPROVER check disable "undefined-shift"
 #pragma CPROVER check disable "conversion"
-    // avoid pointer-primitive checks on r_ok, dynobject and offset
+    // skip checks on r_ok, dynamic_object and pointer_offset
     __CPROVER_bool preconditions =
       (ptr == 0) | (__CPROVER_r_ok(ptr, 0) & __CPROVER_DYNAMIC_OBJECT(ptr) &
                     (__CPROVER_POINTER_OFFSET(ptr) == 0));
 #pragma CPROVER check pop
-    // TODO make sure not to deallocate the same pointer twice
+    // If there is aliasing between the pointers in the freeable set,
+    // and we attempt to free again one of the already freed pointers,
+    // the r_ok condition above will fail, preventing us to deallocate
+    // the same pointer twice
     if((ptr != 0) & preconditions & nondet_CPROVER_bool())
     {
       __CPROVER_contracts_free(ptr, 0);
@@ -2738,7 +2843,7 @@ SET_DEALLOCATE_FREEABLE_LOOP:
   }
 }
 
-/* FUNCTION: __CPROVER_contracts_link_is_freshr_allocated */
+/* FUNCTION: __CPROVER_contracts_link_is_fresh */
 
 #ifndef __CPROVER_contracts_write_set_t_defined
 #  define __CPROVER_contracts_write_set_t_defined
@@ -2778,7 +2883,82 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
+  __CPROVER_contracts_obj_set_ptr_t linked_allocated;
+  __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
+  __CPROVER_bool replacement;
+  __CPROVER_bool assume_requires_ctx;
+  __CPROVER_bool assert_requires_ctx;
+  __CPROVER_bool assume_ensures_ctx;
+  __CPROVER_bool assert_ensures_ctx;
+} __CPROVER_contracts_write_set_t;
+
+typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
+#endif
+
+/// \brief Links \p is_fresh_set to
+/// \p write_set->linked_is_fresh so that the is_fresh predicates
+/// can be evaluated in requires and ensures clauses.
+void __CPROVER_contracts_link_is_fresh(
+  __CPROVER_contracts_write_set_ptr_t write_set,
+  __CPROVER_contracts_obj_set_ptr_t is_fresh_set)
+{
+__CPROVER_HIDE:;
+#ifdef DFCC_DEBUG
+  __CPROVER_assert(
+    write_set != 0, "write_set not NULL");
+#endif
+  if((is_fresh_set != 0))
+  {
+    write_set->linked_is_fresh = is_fresh_set;
+  }
+  else
+  {
+    write_set->linked_is_fresh = 0;
+  }
+}
+
+/* FUNCTION: __CPROVER_contracts_link_allocated */
+
+#ifndef __CPROVER_contracts_write_set_t_defined
+#  define __CPROVER_contracts_write_set_t_defined
+
+typedef struct __CPROVER_contracts_car_t
+{
+  __CPROVER_bool is_writable;
+  __CPROVER_size_t size;
+  void *lb;
+  void *ub;
+} __CPROVER_contracts_car_t;
+
+typedef struct __CPROVER_contracts_car_set_t
+{
+  __CPROVER_size_t max_elems;
+  __CPROVER_contracts_car_t *elems;
+} __CPROVER_contracts_car_set_t;
+
+typedef __CPROVER_contracts_car_set_t *__CPROVER_contracts_car_set_ptr_t;
+
+typedef struct __CPROVER_contracts_obj_set_t
+{
+  __CPROVER_size_t max_elems;
+  __CPROVER_size_t watermark;
+  __CPROVER_size_t nof_elems;
+  __CPROVER_bool is_empty;
+  __CPROVER_bool indexed_by_object_id;
+  void **elems;
+} __CPROVER_contracts_obj_set_t;
+
+typedef __CPROVER_contracts_obj_set_t *__CPROVER_contracts_obj_set_ptr_t;
+
+typedef struct __CPROVER_contracts_write_set_t
+{
+  __CPROVER_contracts_car_set_t contract_assigns;
+  __CPROVER_contracts_obj_set_t contract_frees;
+  __CPROVER_contracts_obj_set_t contract_frees_replacement;
+  __CPROVER_contracts_obj_set_t allocated;
+  __CPROVER_contracts_obj_set_t deallocated;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2795,12 +2975,12 @@ typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
 /// \p write_set_postconditions->linked_allocated so that allocations performed
 /// by \ref __CPROVER_contracts_is_freshr when evaluating ensures clauses are
 /// recorded in \p write_set_to_link.
-void __CPROVER_contracts_link_is_freshr_allocated(
+void __CPROVER_contracts_link_allocated(
   __CPROVER_contracts_write_set_ptr_t write_set_postconditions,
   __CPROVER_contracts_write_set_ptr_t write_set_to_link)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     write_set_postconditions != 0, "write_set_postconditions not NULL");
 #endif
@@ -2855,7 +3035,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2878,7 +3058,7 @@ void __CPROVER_contracts_link_deallocated(
   __CPROVER_contracts_write_set_ptr_t write_set_to_link)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
     write_set_postconditions != 0, "write_set_postconditions not NULL");
 #endif
@@ -2933,7 +3113,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -2958,6 +3138,8 @@ void __CPROVER_contracts_obj_set_add(__CPROVER_contracts_obj_set_ptr_t, void *);
 __CPROVER_bool
 __CPROVER_contracts_obj_set_contains(__CPROVER_contracts_obj_set_ptr_t, void *);
 
+__CPROVER_bool
+__VERIFIER_nondet_bool();
 /// \brief Implementation of the `is_fresh`/`is_freshr` front-end predicates.
 ///
 /// The behaviour depends on the boolean flags carried by \p set
@@ -2965,29 +3147,33 @@ __CPROVER_contracts_obj_set_contains(__CPROVER_contracts_obj_set_ptr_t, void *);
 /// in a requires or an ensures clause context.
 /// \param elem First argument of the `is_freshr`/`is_fresh` predicate
 /// \param size Second argument of the `is_freshr`/`is_fresh` predicate
-/// \param set Write set to record seen and allocated objects in;
+/// \param write_set Write set in which seen and allocated objects are
+/// recorded;
 ///
 /// \details The behaviour is as follows:
 /// - When \p set->assume_requires_ctx is `true`, the predicate allocates a new
-/// object, records the object in \p set->is_freshr_seen, updates \p *elem to
+/// object, records the object in \p set->linked_is_fresh, updates \p *elem to
 /// point to the fresh object and returns `true`;
 /// - When \p set->assume_ensures_ctx is `true`, the predicate allocates a new
 /// object, records the object in \p set->linked_allocated, updates \p *elem
 /// to point to the fresh object and returns `true`;
 /// - When \p set->assert_requires_ctx or \p set->assert_ensures_ctx is `true`,
-/// the predicate computes if \p *elem is readable to the desired \p size and is
-/// is not found in \p set->is_freshr_seen, records the object in
-/// \p set->is_freshr_seen and returns the computed condition.
+/// the predicate first computes wether \p *elem is in \p set->linked_is_fresh
+/// and returns false if it is. Otherwise it records the object in
+/// \p set->linked_is_fresh and returns the value of r_ok(*elem, size).
 __CPROVER_bool __CPROVER_contracts_is_freshr(
   void **elem,
   __CPROVER_size_t size,
-  __CPROVER_contracts_write_set_ptr_t set)
+  __CPROVER_contracts_write_set_ptr_t write_set)
 {
+  if(!write_set)
+    return __VERIFIER_nondet_bool();
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(
-    __CPROVER_rw_ok(set, sizeof(__CPROVER_contracts_write_set_t)),
+    __CPROVER_rw_ok(write_set, sizeof(__CPROVER_contracts_write_set_t)),
     "set readable");
+  __CPROVER_assert(write_set->linked_is_fresh, "set->linked_is_fresh is not NULL");
 #endif
 #pragma CPROVER check push
 #pragma CPROVER check disable "pointer"
@@ -2996,55 +3182,105 @@ __CPROVER_HIDE:;
 #pragma CPROVER check disable "signed-overflow"
 #pragma CPROVER check disable "unsigned-overflow"
 #pragma CPROVER check disable "conversion"
-  if(set->assume_requires_ctx)
+  if(write_set->assume_requires_ctx)
   {
+#ifdef DFCC_DEBUG
     __CPROVER_assert(
-      (set->assert_requires_ctx == 0) & (set->assume_ensures_ctx == 0) &
-        (set->assert_ensures_ctx == 0),
+      (write_set->assert_requires_ctx == 0) &
+        (write_set->assume_ensures_ctx == 0) &
+        (write_set->assert_ensures_ctx == 0),
       "only one context flag at a time");
-    // pass a null pointer to malloc si that the object does not get tracked
-    // as assignable in the requires clause scope
+#endif
+    // pass a null write set pointer to the instrumented malloc
     void *ptr = __CPROVER_contracts_malloc(size, 0);
     *elem = ptr;
     if(!ptr)
       return 0;
-    // record fresh object in the map
-    __CPROVER_contracts_obj_set_add(&(set->is_freshr_seen), ptr);
+      // record fresh object in the object set
+#ifdef DFCC_DEBUG
+    // manually inlined below
+    __CPROVER_contracts_obj_set_add(write_set->linked_is_fresh, ptr);
+#else
+    __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+    write_set->linked_is_fresh->nof_elems =
+      (write_set->linked_is_fresh->elems[object_id] != 0)
+        ? write_set->linked_is_fresh->nof_elems
+        : write_set->linked_is_fresh->nof_elems + 1;
+    write_set->linked_is_fresh->elems[object_id] = ptr;
+    write_set->linked_is_fresh->is_empty = 0;
+#endif
     return 1;
   }
-  else if(set->assume_ensures_ctx)
+  else if(write_set->assume_ensures_ctx)
   {
+#ifdef DFCC_DEBUG
     __CPROVER_assert(
-      (set->assume_requires_ctx == 0) & (set->assert_requires_ctx == 0) &
-        (set->assert_ensures_ctx == 0),
+      (write_set->assume_requires_ctx == 0) &
+        (write_set->assert_requires_ctx == 0) &
+        (write_set->assert_ensures_ctx == 0),
       "only one context flag at a time");
+#endif
     void *ptr = __CPROVER_contracts_malloc(size, 0);
-    // record new object in linked allocated set
-    __CPROVER_contracts_obj_set_add(set->linked_allocated, ptr);
     *elem = ptr;
-    return (ptr != 0);
+    if(!ptr)
+      return 0;
+      // record fresh object in the caller's write set
+#ifdef DFCC_DEBUG
+    __CPROVER_contracts_obj_set_add(write_set->linked_allocated, ptr);
+#else
+    __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+    write_set->linked_allocated->nof_elems =
+      (write_set->linked_allocated->elems[object_id] != 0)
+        ? write_set->linked_allocated->nof_elems
+        : write_set->linked_allocated->nof_elems + 1;
+    write_set->linked_allocated->elems[object_id] = ptr;
+    write_set->linked_allocated->is_empty = 0;
+#endif
+    return 1;
   }
-  else if(set->assert_requires_ctx | set->assert_ensures_ctx)
+  else if(write_set->assert_requires_ctx | write_set->assert_ensures_ctx)
   {
+#ifdef DFCC_DEBUG
     __CPROVER_assert(
-      (set->assume_requires_ctx == 0) & (set->assume_ensures_ctx == 0),
+      (write_set->assume_requires_ctx == 0) &
+        (write_set->assume_ensures_ctx == 0),
       "only one context flag at a time");
-    // check separation
-    __CPROVER_contracts_obj_set_ptr_t seen = &(set->is_freshr_seen);
-    __CPROVER_bool not_contains =
-      !__CPROVER_contracts_obj_set_contains(seen, *elem);
-    __CPROVER_bool r_ok = __CPROVER_r_ok(*elem, size);
-    __CPROVER_bool ok = not_contains & r_ok;
-    // record object
-    __CPROVER_contracts_obj_set_add(seen, *elem);
-    return ok;
+#endif
+    __CPROVER_contracts_obj_set_ptr_t seen = write_set->linked_is_fresh;
+    void *ptr = *elem;
+    // null pointers or already seen pointers are not fresh
+#ifdef DFCC_DEBUG
+    // manually inlined below
+    if((ptr == 0) || (__CPROVER_contracts_obj_set_contains(seen, ptr)))
+      return 0;
+#else
+    if(ptr == 0)
+      return 0;
+
+    __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+
+    if(seen->elems[object_id] != 0)
+      return 0;
+#endif
+      // record fresh object in the object set
+#ifdef DFCC_DEBUG
+    // manually inlined below
+    __CPROVER_contracts_obj_set_add(seen, ptr);
+#else
+    seen->nof_elems =
+      (seen->elems[object_id] != 0) ? seen->nof_elems : seen->nof_elems + 1;
+    seen->elems[object_id] = ptr;
+    seen->is_empty = 0;
+#endif
+    // check size
+    return __CPROVER_r_ok(ptr, size);
   }
   else
   {
     __CPROVER_assert(
       0, "__CPROVER_is_freshr is only called in requires or ensures clauses");
     __CPROVER_assume(0);
-    return 0; // just to silence libcheck
+    return 0; // to silence libcheck
   }
 #pragma CPROVER check pop
 }
@@ -3089,7 +3325,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3109,9 +3345,6 @@ void *__CPROVER_contracts_write_set_havoc_get_assignable_target(
   __CPROVER_size_t idx)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
-  __CPROVER_assert(idx < set->contract_assigns.max_elems, "no OOB access");
-#endif
   __CPROVER_contracts_car_t car = set->contract_assigns.elems[idx];
   if(car.is_writable)
     return car.lb;
@@ -3159,7 +3392,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3180,9 +3413,7 @@ void __CPROVER_contracts_write_set_havoc_whole_object(
   __CPROVER_size_t idx)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
   __CPROVER_assert(idx < set->contract_assigns.max_elems, "no OOB access");
-#endif
   __CPROVER_contracts_car_t car = set->contract_assigns.elems[idx];
   if(car.is_writable)
     __CPROVER_havoc_object(car.lb);
@@ -3228,7 +3459,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3250,7 +3481,7 @@ void __CPROVER_contracts_write_set_havoc_slice(
   __CPROVER_size_t idx)
 {
 __CPROVER_HIDE:;
-#ifdef DFCC_SELF_CHECK
+#ifdef DFCC_DEBUG
   __CPROVER_assert(idx < set->contract_assigns.max_elems, "no OOB access");
 #endif
   __CPROVER_contracts_car_t car = set->contract_assigns.elems[idx];
@@ -3309,7 +3540,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3408,7 +3639,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3421,8 +3652,9 @@ typedef struct __CPROVER_contracts_write_set_t
 typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
 #endif
 
-__CPROVER_bool
-__CPROVER_contracts_obj_set_contains(__CPROVER_contracts_obj_set_ptr_t, void *);
+__CPROVER_bool __CPROVER_contracts_obj_set_contains_exact(
+  __CPROVER_contracts_obj_set_ptr_t,
+  void *);
 
 /// \brief Returns true iff the pointer \p ptr is found in \p set->deallocated.
 __CPROVER_bool
@@ -3435,7 +3667,14 @@ __CPROVER_HIDE:;
     "__CPROVER_is_freed is used only in ensures clauses");
   __CPROVER_assert(
     (set->linked_deallocated != 0), "linked_deallocated is not null");
-  return __CPROVER_contracts_obj_set_contains(set->linked_deallocated, ptr);
+#ifdef DFCC_DEBUG
+  // manually inlined below
+  return __CPROVER_contracts_obj_set_contains_exact(
+    set->linked_deallocated, ptr);
+#else
+  __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+  return set->linked_deallocated->elems[object_id] == ptr;
+#endif
 }
 
 /* FUNCTION: __CPROVER_contracts_check_replace_ensures_is_freed_preconditions */
@@ -3478,7 +3717,7 @@ typedef struct __CPROVER_contracts_write_set_t
   __CPROVER_contracts_obj_set_t contract_frees_replacement;
   __CPROVER_contracts_obj_set_t allocated;
   __CPROVER_contracts_obj_set_t deallocated;
-  __CPROVER_contracts_obj_set_t is_freshr_seen;
+  __CPROVER_contracts_obj_set_ptr_t linked_is_fresh;
   __CPROVER_contracts_obj_set_ptr_t linked_allocated;
   __CPROVER_contracts_obj_set_ptr_t linked_deallocated;
   __CPROVER_bool replacement;
@@ -3491,14 +3730,15 @@ typedef struct __CPROVER_contracts_write_set_t
 typedef __CPROVER_contracts_write_set_t *__CPROVER_contracts_write_set_ptr_t;
 #endif
 
-__CPROVER_bool
-__CPROVER_contracts_obj_set_contains(__CPROVER_contracts_obj_set_ptr_t, void *);
+__CPROVER_bool __CPROVER_contracts_obj_set_contains_exact(
+  __CPROVER_contracts_obj_set_ptr_t,
+  void *);
 
 /// \brief Asserts that \p ptr is found in \p set->contract_frees.
 ///
 /// \details If proved, the assertion demonstrates that it is possible to assume
 /// that `is_freed(ptr)` holds as a post condition without causing a
-/// contradiction when assuming that the ensures clause of a contract holds.
+/// contradiction.
 void __CPROVER_contracts_check_replace_ensures_is_freed_preconditions(
   void *ptr,
   __CPROVER_contracts_write_set_ptr_t set)
@@ -3510,9 +3750,18 @@ __CPROVER_HIDE:;
 
   if(set->assume_ensures_ctx)
   {
+#ifdef DFCC_DEBUG
+    // manually inlined below
     __CPROVER_assert(
-      __CPROVER_contracts_obj_set_contains(&(set->contract_frees), ptr),
+      __CPROVER_contracts_obj_set_contains_exact(&(set->contract_frees), ptr),
       "assuming __CPROVER_is_freed(ptr) requires ptr to always exist in the "
       "contract's frees clause");
+#else
+    __CPROVER_size_t object_id = __CPROVER_POINTER_OBJECT(ptr);
+    __CPROVER_assert(
+      set->contract_frees.elems[object_id] == ptr,
+      "assuming __CPROVER_is_freed(ptr) requires ptr to always exist in the "
+      "contract's frees clause");
+#endif
   }
 }
