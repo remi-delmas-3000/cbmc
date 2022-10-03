@@ -1,16 +1,13 @@
 CORE
 main_replace.c
 --dfcc main --replace-call-with-contract resize_vec --enforce-contract resize_vec_incr10 _ --signed-overflow-check --unsigned-overflow-check --pointer-overflow-check
-^\[.*\] .* Check that v->size \(assigned by the contract of resize_vec\) is assignable: SUCCESS
-^\[.*\] .* Check that v->arr \(assigned by the contract of resize_vec\) is assignable: FAILURE
-^\[.*\] .* Check that POINTER_OBJECT\(\(const void \*\)v->arr\) \(assigned by the contract of resize_vec\) is assignable: FAILURE
+^\[resize_vec.assigns.\d+\] Check that the assigns clause of contract::resize_vec is included in the caller's assigns clause: FAILURE$
+^\[resize_vec.frees.\d+\] Check that the frees clause of contract::resize_vec is included in the caller's frees clause: FAILURE$
 ^VERIFICATION FAILED$
 ^EXIT=10$
 ^SIGNAL=0$
 --
 --
-Shows that when an assigns clause contains targets that are dependent, 
-in this case, a pointer variable `v->arr` and
-the object it points to `__CPROVER_POINTER_OBJECT(v->arr)`, we can correctly
-havoc them when replacing the call by the contract.
-In this version of the test the inclusion check must fail.
+This test checks that assigns clause and frees clause inclusion checks
+are falsified when a callee (resize_vec) assigns outside the assigns clause
+of the caller (resize_vec_incr10).

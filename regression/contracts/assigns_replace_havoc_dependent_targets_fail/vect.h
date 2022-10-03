@@ -11,9 +11,9 @@ void resize_vec(vect *v, size_t incr)
   // clang-format off
 __CPROVER_requires(
   __CPROVER_is_fresh(v, sizeof(vect)) &&
+  __CPROVER_is_fresh(v->arr, v->size) &&
   0 < v->size && v->size <= __CPROVER_max_malloc_size &&
-  0 < incr && incr < __CPROVER_max_malloc_size - v->size &&
-  __CPROVER_is_fresh(v->arr, v->size)
+  0 < incr && incr < __CPROVER_max_malloc_size - v->size
 )
 __CPROVER_assigns(v->size, v->arr, __CPROVER_whole_object(v->arr))
 __CPROVER_frees(v->arr)
@@ -26,6 +26,7 @@ __CPROVER_ensures(
   free(v->arr);
   v->size += incr;
   v->arr = malloc(v->size);
+  __CPROVER_array_set(v->arr, 0);
   return;
 }
 
@@ -33,9 +34,9 @@ void resize_vec_incr10(vect *v)
   // clang-format off
 __CPROVER_requires(
   __CPROVER_is_fresh(v, sizeof(vect)) &&
+  __CPROVER_is_fresh(v->arr, v->size) &&
   0 < v->size && v->size <= __CPROVER_max_malloc_size &&
-  v->size + 10 < __CPROVER_max_malloc_size &&
-  __CPROVER_is_fresh(v->arr, v->size)
+  v->size + 10 < __CPROVER_max_malloc_size
 )
 __CPROVER_assigns(v->size)
 __CPROVER_ensures(
@@ -44,6 +45,7 @@ __CPROVER_ensures(
 )
 // clang-format on
 {
+  // assigns clause inclusion and frees clause inclusion checks must fail
   resize_vec(v, 10);
   return;
 }
