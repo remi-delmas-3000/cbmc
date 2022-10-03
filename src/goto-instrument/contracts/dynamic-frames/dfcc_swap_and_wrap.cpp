@@ -6,7 +6,6 @@ Author: Remi Delmas, delmarsd@amazon.com
 
 \*******************************************************************/
 
-// TODO prune includes
 #include "dfcc_swap_and_wrap.h"
 
 #include <util/config.h>
@@ -126,24 +125,25 @@ void dfcc_swap_and_wrapt::get_swapped_functions(std::set<irep_idt> &dest) const
 
 /// \details Generates globals statics:
 /// ```c
-/// static bool __contract_check_started = false;
-/// static bool __contract_check_completed = false;
+/// static bool __contract_check_in_progress = false;
+/// static bool __contract_checked_once = false;
 /// ```
 ///
 /// Adds the following instructions in the wrapper function body:
 /// ```c
-/// IF __contract_check_started GOTO replace;
-/// ASSERT !checked "only a single top-level called allowed";
-/// __contract_check_started = true;
+/// IF __contract_check_in_progress GOTO replace;
+/// ASSERT !__contract_checked_once "only a single top-level called allowed";
+/// __contract_check_in_progress = true;
 /// <contract_handler.add_contract_checking_instructions(...)>;
-/// __contract_check_completed = true;
-/// __contract_check_started = false;
+/// __contract_checked_once = true;
+/// __contract_check_in_progress = false;
 /// GOTO end;
 /// replace:
 /// // if allow_recursive_calls
 /// <contract_handler.add_contract_replacement_instructions(...)>;
 /// // if !allow_recursive_calls
-/// ASSERT false, "recursive calls not allowed";
+/// ASSERT false, "no recursive calls";
+/// ASSUME false;
 /// end:
 /// END_FUNCTION;
 /// ```
@@ -171,7 +171,7 @@ void dfcc_swap_and_wrapt::check_contract(
                          .create_static_symbol(
                            bool_typet(),
                            id2string(function_id),
-                           "__contract_check_started",
+                           "__contract_check_in_progress",
                            wrapper_symbol.location,
                            wrapper_symbol.mode,
                            wrapper_symbol.module,
@@ -182,7 +182,7 @@ void dfcc_swap_and_wrapt::check_contract(
                            .create_static_symbol(
                              bool_typet(),
                              id2string(function_id),
-                             "__contract_check_completed",
+                             "__contract_checked_once",
                              wrapper_symbol.location,
                              wrapper_symbol.mode,
                              wrapper_symbol.module,
@@ -200,8 +200,8 @@ void dfcc_swap_and_wrapt::check_contract(
   // Any other call occuring with `check_completed` true is forbidden.
   source_locationt sl;
   sl.set_comment(
-    "only a single top-level call to '" + id2string(function_id) +
-    "' is allowed when checking contract '" + id2string(contract_id) + "'");
+    "Only a single top-level call to function " + id2string(function_id) +
+    " when checking contract " + id2string(contract_id));
   body.add(goto_programt::make_assertion(not_exprt(check_completed), sl));
   body.add(goto_programt::make_assignment(check_started, true_exprt()));
 
@@ -220,6 +220,7 @@ void dfcc_swap_and_wrapt::check_contract(
     function_pointer_contracts);
 
   body.add(goto_programt::make_assignment(check_completed, true_exprt()));
+  body.add(goto_programt::make_assignment(check_started, false_exprt()));
 
   // unconditionally Jump to the end after the check
   auto goto_end_function = body.add(goto_programt::make_incomplete_goto());
@@ -228,25 +229,26 @@ void dfcc_swap_and_wrapt::check_contract(
   auto contract_replacement_label = body.add(goto_programt::make_skip());
   check_started_goto->complete_goto(contract_replacement_label);
 
-  // if(allow_recursive_calls)
-  // {
-  //   contract_handler.add_contract_instructions(
-  //     dfcc_contract_modet::REPLACE,
-  //     wrapper_id,
-  //     wrapped_id,
-  //     contract_id,
-  //     write_set_symbol,
-  //     body,
-  //     function_pointer_contracts);
-  // }
-  // else
-  // {
-  //   source_locationt sl;
-  //   sl.set_comment(
-  //     "unexpected recursive call for '" + id2string(function_id) +
-  //     "' when checking contract '" + id2string(contract_id) + "'");
-  //   body.add(goto_programt::make_assertion(false_exprt(), sl));
-  // }
+  if(allow_recursive_calls)
+  {
+    contract_handler.add_contract_instructions(
+      dfcc_contract_modet::REPLACE,
+      wrapper_id,
+      wrapped_id,
+      contract_id,
+      write_set_symbol,
+      body,
+      function_pointer_contracts);
+  }
+  else
+  {
+    source_locationt sl;
+    sl.set_comment(
+      "No recursive call to function " + id2string(function_id) +
+      " when checking contract " + id2string(contract_id));
+    body.add(goto_programt::make_assertion(false_exprt(), sl));
+    body.add(goto_programt::make_assumption(false_exprt(), sl));
+  }
 
   auto end_function_label = body.add(goto_programt::make_end_function());
   goto_end_function->complete_goto(end_function_label);
@@ -260,7 +262,7 @@ void dfcc_swap_and_wrapt::check_contract(
   utils.set_hide(wrapper_id, true);
 
   // instrument the wrapped function
-  instrument.instrument_function(wrapped_id);
+  instrument.instrument_wrapped_function(wrapped_id, wrapper_id);
 
   goto_model.goto_functions.update();
 
