@@ -1,19 +1,19 @@
 #include <assert.h>
 #include <limits.h>
 
-void foo(int *x) __CPROVER_assigns(*x) __CPROVER_requires(*x > 0)
-  __CPROVER_ensures(*x == __CPROVER_old(*x) + 2)
+void foo(int *x) __CPROVER_assigns(*x)
+  __CPROVER_requires(0 <= *x && *x < INT_MAX)
+    __CPROVER_ensures(*x == __CPROVER_old(*x) + 1)
 {
-  *x = *x + 2;
+  *x = *x + 1;
 }
 
 int main()
 {
-  int n;
-  __CPROVER_assume(n > 0 && n < INT_MAX - 2);
-  foo(&n);
-
-  assert(n > 2);
-
+  int x;
+  __CPROVER_assume(0 <= x && x < INT_MAX);
+  int old_x = x;
+  foo(&x);
+  assert(x == old_x + 1);
   return 0;
 }
