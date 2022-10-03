@@ -110,7 +110,8 @@ const symbolt &dfcc_utilst::create_static_symbol(
   const source_locationt &source_location,
   const irep_idt &mode,
   const irep_idt &module,
-  const exprt &initial_value)
+  const exprt &initial_value,
+  const bool no_nondet_initialization)
 {
   log.debug() << "dfcc_utilst::create_static_symbol(" << prefix
               << "::" << base_name << ")" << messaget::eom;
@@ -119,6 +120,7 @@ const symbolt &dfcc_utilst::create_static_symbol(
     type, prefix, base_name, source_location, mode, goto_model.symbol_table);
   symbol.is_static_lifetime = true;
   symbol.value = initial_value;
+  symbol.value.set(ID_C_no_nondet_initialization, no_nondet_initialization);
   symbol.is_lvalue = true;
   symbol.is_state_var = true;
   symbol.is_thread_local = true;
@@ -567,4 +569,9 @@ void dfcc_utilst::set_hide(const irep_idt &function_id, bool hide)
       inst->source_location_nonconst().set(ID_hide, hide);
     }
   }
+}
+
+void dfcc_utilst::inhibit_unused_functions(const irep_idt &start)
+{
+  PRECONDITION_WITH_DIAGNOSTICS(false, "not yet implemented");
 }
