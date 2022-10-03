@@ -1171,7 +1171,7 @@ void goto_instrument_parse_optionst::instrument_goto_program()
 
     if(cmdline.isset(FLAG_LOOP_CONTRACTS))
     {
-      log.error() << " The combination of  " << FLAG_DFCC << " and "
+      log.error() << " The combination of " << FLAG_DFCC << " and "
                   << FLAG_LOOP_CONTRACTS << " is not yet supported"
                   << messaget::eom;
       throw 0;
@@ -1185,18 +1185,34 @@ void goto_instrument_parse_optionst::instrument_goto_program()
       cmdline.get_values(FLAG_REPLACE_CALL).begin(),
       cmdline.get_values(FLAG_REPLACE_CALL).end());
 
+    if(
+      !cmdline.get_values(FLAG_ENFORCE_CONTRACT).empty() &&
+      !cmdline.get_values(FLAG_ENFORCE_CONTRACT_REC).empty())
+    {
+      log.error() << "--" << FLAG_ENFORCE_CONTRACT << " and --"
+                  << FLAG_ENFORCE_CONTRACT_REC << " are mutually exclusive"
+                  << messaget::eom;
+      throw 0;
+    }
+
+    auto &to_enforce = !cmdline.get_values(FLAG_ENFORCE_CONTRACT_REC).empty()
+                         ? cmdline.get_values(FLAG_ENFORCE_CONTRACT_REC)
+                         : cmdline.get_values(FLAG_ENFORCE_CONTRACT);
+    bool allow_recursive_calls = !cmdline.get_values(FLAG_ENFORCE_CONTRACT_REC).empty();
     std::set<std::string> to_check(
-      cmdline.get_values(FLAG_ENFORCE_CONTRACT).begin(),
-      cmdline.get_values(FLAG_ENFORCE_CONTRACT).end());
+      to_enforce.begin(),
+      to_enforce.end());
 
     std::set<std::string> to_exclude_from_nondet_static(
       cmdline.get_values("nondet-static-exclude").begin(),
       cmdline.get_values("nondet-static-exclude").end());
 
+
     dfcc(
       goto_model,
       harness_id,
       to_check,
+      allow_recursive_calls,
       to_replace,
       false,
       to_exclude_from_nondet_static,
@@ -1963,6 +1979,7 @@ void goto_instrument_parse_optionst::help()
     HELP_LOOP_INVARIANT_SYNTHESIZER
     HELP_REPLACE_CALL
     HELP_ENFORCE_CONTRACT
+    HELP_ENFORCE_CONTRACT_REC
     "\n"
     "User-interface options:\n"
     HELP_FLUSH

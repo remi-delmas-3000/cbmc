@@ -100,6 +100,7 @@ Author: Daniel Kroening, kroening@kroening.com
   "(" FLAG_LOOP_CONTRACTS ")" \
   "(" FLAG_REPLACE_CALL "):" \
   "(" FLAG_ENFORCE_CONTRACT "):" \
+  OPT_ENFORCE_CONTRACT_REC \
   "(show-threaded)(list-calls-args)" \
   "(undefined-function-is-assume-false)" \
   "(remove-function-body):"\
