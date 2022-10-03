@@ -51,12 +51,32 @@ public:
     dfcc_spec_functionst &spec_functions,
     dfcc_contract_handlert &contract_handler);
 
-  void swap_and_wrap(
-    const dfcc_contract_modet contract_mode,
+  void swap_and_wrap_check(
     const irep_idt &function_id,
     const irep_idt &contract_id,
     std::set<irep_idt> &function_pointer_contracts,
-    bool allow_recursive_calls = false);
+    bool allow_recursive_calls)
+  {
+    swap_and_wrap(
+      dfcc_contract_modet::CHECK,
+      function_id,
+      contract_id,
+      function_pointer_contracts,
+      allow_recursive_calls);
+  }
+
+  void swap_and_wrap_replace(
+    const irep_idt &function_id,
+    const irep_idt &contract_id,
+    std::set<irep_idt> &function_pointer_contracts)
+  {
+    swap_and_wrap(
+      dfcc_contract_modet::REPLACE,
+      function_id,
+      contract_id,
+      function_pointer_contracts,
+      false);
+  }
 
   /// Adds the set of swapped functions to dest
   void get_swapped_functions(std::set<irep_idt> &dest) const;
@@ -74,6 +94,13 @@ protected:
 
   /// remember all functions that were swapped/wrapped and in which mode
   static std::map<irep_idt, std::pair<irep_idt, dfcc_contract_modet>> cache;
+
+  void swap_and_wrap(
+    const dfcc_contract_modet contract_mode,
+    const irep_idt &function_id,
+    const irep_idt &contract_id,
+    std::set<irep_idt> &function_pointer_contracts,
+    bool allow_recursive_calls);
 
   /// Swaps-and-wraps the given `function_id` in a wrapper function that
   /// checks the given `contract_id`.
