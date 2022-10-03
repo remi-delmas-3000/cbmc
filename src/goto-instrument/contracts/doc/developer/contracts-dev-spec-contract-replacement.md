@@ -74,7 +74,7 @@ ret_t foo(foo_params, write_set_t caller_write_set) {
 
   // Link caller write set and write set so that allocations due to is_fresh
   // in post conditions are recorded in the caller write set
-  __CPROVER_contracts_write_set_link_is_freshr_allocated(ensures_write_set, caller_write_set);
+  __CPROVER_contracts_write_set_link_allocated(ensures_write_set, caller_write_set);
 
   // link the ensures write set to the contract write set so that the is_freed
   // predicates in the postconditions get access to the deallocated pointers
