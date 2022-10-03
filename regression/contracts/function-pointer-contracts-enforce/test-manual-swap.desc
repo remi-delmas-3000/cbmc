@@ -1,6 +1,6 @@
 CORE
 main.c
---restrict-function-pointer foo.function_pointer_call.1/arr_fun_contract --dfcc main --enforce-contract foo --replace-call-with-contract bar
+--restrict-function-pointer foo.function_pointer_call.1/arr_fun_contract --dfcc main --enforce-contract foo --replace-call-with-contract bar --replace-call-with-contract arr_fun_contract
 ^\[arr_fun_contract.assigns.\d+\] Check that the assigns clause of contract::arr_fun_contract is included in the caller's assigns clause: SUCCESS$
 ^\[arr_fun_contract.frees.\d+\] Check that the frees clause of contract::arr_fun_contract is included in the caller's frees clause: SUCCESS$
 ^\[arr_fun_contract.precondition.\d+\] line 14 Check requires clause of contract contract::arr_fun_contract for function arr_fun_contract: SUCCESS$
@@ -18,5 +18,5 @@ are satified.
 We check that the preconditions of arr_fun_contract are checked and satisfied
 and that the assigns clause and frees clause inclusion checks of the function
 pointer against foo are also checked and satisfied.
-In this test, the function pointer contract is automatically discovered and
-swapped with itself.
+In this test, the function pointer is manually swapped with itself so
+goto-instrument should not attempt to wrap it again.
