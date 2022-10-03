@@ -64,6 +64,13 @@ public:
   /// value `initial_value` in the symbol table, returns the created symbol.
   /// If a symbol of the same name already exists the name will be decorated
   /// with a unique suffix.
+  /// By default the symbol is be protected against nondet initialisation
+  /// by tagging the its value field with a \ref ID_C_no_nondet_initialization
+  /// attribute as understood by \ref nondet_static.
+  /// This is because the static instrumentation variables are meant to
+  /// keep their initial values for the instrumentation to work as intended.
+  /// To allow nondet-initialisation of the symbol,
+  /// just set  \p no_nondet_initialization to `false` when calling the method.
   const symbolt &create_static_symbol(
     const typet &type,
     const std::string &prefix,
@@ -71,7 +78,8 @@ public:
     const source_locationt &source_location,
     const irep_idt &mode,
     const irep_idt &module,
-    const exprt &initial_value);
+    const exprt &initial_value,
+    const bool no_nondet_initialization = true);
 
   /// Regenerates the CPROVER_INITIALIZE function which defines all global
   /// statics of the goto model.
@@ -210,6 +218,21 @@ public:
   /// \brief Sets the given hide flag on all instructions of the function if it
   /// exists.
   void set_hide(const irep_idt &function_id, bool hide);
+
+  /// \brief Traverses the call tree from the given entry point to identify
+  /// functions symbols that are effectively called in the model,
+  /// Then goes over all functions of the model and turns the bodies of all
+  /// functions that are not in the used function set into:
+  ///  ```c
+  ///  assert(false, "function identified as unreachable");
+  ///  assume(false);
+  ///  ```
+  /// That way, if the analysis mistakenly pruned some functions, assertions
+  /// will be violated and the analysis will fail.
+  /// TODO: add a command line flag to tell the instrumentation to not prune
+  /// a function.
+  /// \param start name of the entry point
+  void inhibit_unused_functions(const irep_idt &start);
 };
 
 #endif
