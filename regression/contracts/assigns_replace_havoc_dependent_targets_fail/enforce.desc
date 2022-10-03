@@ -6,4 +6,4 @@ main_enforce.c
 ^SIGNAL=0$
 --
 --
-Verifies the contract being replaced in `replace.desc`.
+Verifies that the contract being replaced in `replace.desc` holds on resize_vec.
