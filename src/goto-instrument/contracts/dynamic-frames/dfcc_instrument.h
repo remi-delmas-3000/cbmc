@@ -76,17 +76,60 @@ public:
   /// function calls and function pointer calls.
   void instrument_harness_function(const irep_idt &function_id);
 
-  /// Instruments a GOTO function by adding an extra write set parameter and
-  /// inserting frame condition checks in its goto program.
+  /// \brief Instruments a GOTO function by adding an extra write set parameter
+  /// and inserting frame condition checks in its GOTO program, as well as
+  /// instructions to automatically insert and remove locally declared static
+  /// variables in the write set.
+  ///
+  /// \pre The function must *not* be one of the checked or replaced functions.
+  /// For checked/replaced functions \ref instrument_wrapped_function must be
+  /// used instead.
+  /// \param function_id The name of the function, used to retrieve the function
+  /// to instrument and used as prefix when generating new symbols during
+  /// instrumentation.
   void instrument_function(const irep_idt &function_id);
 
-  /// Instruments a GOTO program against a given write set pointer variable.
+  /// \brief Instruments a GOTO function by adding an extra write set parameter
+  /// and inserting frame condition checks in its GOTO program, as well as
+  /// instructions to automatically insert and remove locally declared static
+  /// variables in the write set.
+  ///
+  /// \pre The function must be a function wrapped for contract checking or
+  /// replacemend. For other functions \ref instrument_function must be used
+  /// instead.
+  ///
+  /// \param wrapped_function_id The name of the function, used to retrieve the
+  /// function to instrument and used as prefix when generating new symbols
+  /// during instrumentation.
+  /// \param initial_function_id The initial name of the function,
+  /// before mangling. This is the name used to identify statics symbols in the
+  /// symbol table that were locally declared in the function.
+  void instrument_wrapped_function(
+    const irep_idt &wrapped_function_id,
+    const irep_idt &initial_function_id);
+
+  /// \brief Instruments a GOTO program against a given write set variable.
+  ///
+  /// \remark  Only variables declared within the instruction sequence are
+  /// considered local and automatically assignable. In particular, occurrences
+  /// of symbols with the `is_parameter` which represent parameters of the
+  /// enclosing function are not considered as local to the program.
+  /// \remark Local statics declared in the program are *not* searched for and
+  /// are *not* added automatically to the write set.
+  /// \remark This function is meant to instrument instruction sequences that
+  /// were generated from contract clauses.
+  ///
+  /// \param function_id Name used as prefix when creating new symbols during
+  /// instrumentation.
+  /// \param goto_program Goto program to instrument.
+  /// \param write_set Write set variable to use for instrumentation.
   void instrument_goto_program(
     const irep_idt &function_id,
     goto_programt &goto_program,
     const exprt &write_set);
 
-  /// Adds the set of instrumented functions to dest
+  /// Adds the names of instrumented functions to \p dest.
+  /// The names are kept track of in the \ref function_cache field.
   void get_instrumented_functions(std::set<irep_idt> &dest) const;
 
 protected:
@@ -97,26 +140,91 @@ protected:
   dfcc_libraryt &library;
   namespacet ns;
 
+  /// \brief Keeps track of instrumented functions, so that no function gets
+  /// instrumented more than once.
   static std::set<irep_idt> function_cache;
 
+  /// \brief Collects the symbols names from the symbol table that
+  /// have the static flag set to true and have a source location where the
+  /// function field is equal to the given \p function_id, and writes them to
+  /// \p local_statics.
+  /// \param[in] function_id Function name used to collect the statics
+  /// \param[inout] local_statics Destination set for the collected symbols
+  void collect_local_statics(
+    const irep_idt &function_id,
+    std::set<symbol_exprt> &local_statics);
+
+  /// \brief Generates a guarded call to record a locally allocated symbol
+  /// and inserts it in the goto_program at the target, and moves the target
+  /// forward.
+  /// ```
+  /// IF !write_set GOTO skip_target;
+  /// CALL __CPROVER_contracts_write_set_add_allocated(write_set, &x);
+  /// skip_target: SKIP;
+  /// ```
+  /// \param function_id Name of the function in which the instructions is added
+  /// \param write_set The write set to the symbol expr to
+  /// \param symbol_expr The symbol to add to the write set
+  /// \param target The instruction pointer to insert at
+  /// \param goto_program the goto_program being instrumented
+  void insert_add_allocated_call(
+    const irep_idt &function_id,
+    const exprt &write_set,
+    const symbol_exprt &symbol_expr,
+    goto_programt::targett &target,
+    goto_programt &goto_program);
+
+  /// \brief Generates a guarded call to record the death of a local symbol
+  /// and inserts it in the goto_program at the target, and moves the target
+  /// forward.
+  /// ```c
+  /// IF !write_set GOTO skip_target;
+  /// CALL __CPROVER_contracts_write_set_record_dead(write_set, &x);
+  /// skip_target: SKIP;
+  /// ```
+  /// \param function_id Name of the function in which the instructions is added
+  /// \param write_set The write set to the symbol expr to
+  /// \param symbol_expr The symbol to add to the write set
+  /// \param target The instruction pointer to insert at
+  /// \param goto_program the goto_program being instrumented
+  void insert_record_dead_call(
+    const irep_idt &function_id,
+    const exprt &write_set,
+    const symbol_exprt &symbol_expr,
+    goto_programt::targett &target,
+    goto_programt &goto_program);
+
+  /// Instruments a GOTO function by adding an extra write set parameter and
+  /// inserting frame condition checks in its goto program.
+  /// Uses \p function_id_for_local_static_search  to search for local statics
+  /// and automatically to add/remove to the write set.
+  void instrument_function(
+    const irep_idt &function_id,
+    const irep_idt &function_id_for_local_static_search);
+
   /// Instruments the body of a GOTO function against a given write set.
+  /// Adds the given local statics to the write set in pre and removes them
+  /// post.
   void instrument_function_body(
     const irep_idt &function_id,
     const exprt &write_set,
-    cfg_infot &cfg_info);
+    cfg_infot &cfg_info,
+    const std::set<symbol_exprt> &local_statics);
 
-  /// Instruments a sequence of instructions.
+  /// \brief Instruments the instructions found between \p first_instruction and
+  /// \p last_instruction in the instructions of \p goto_program against the
+  /// given \p write_set variable.
   ///
-  /// \param function_id name of the enclosing function
-  /// (used as prefix for new variables)
-  /// \param write_set write set variable to instrument against
-  /// \param goto_program goto program to instrument
-  /// \param first_instruction first instruction to instrument in the program
-  /// \param last_instruction last instruction to instrument (excluded !!!)
-  /// \param cfg_info computes local and dirty variables to discard some checks
-  /// \param pred filter predicate for instructions
-  ///  If `pred` is not provided, all instructions are checked.
-  ///  If `pred` is provided, only instructions satisfying pred are checked.
+  /// \param function_id Name of the enclosing function used as prefix for new
+  /// variables generated during instrumentation.
+  /// \param write_set Write set variable to instrument against
+  /// \param goto_program Program to instrument the instructions of
+  /// \param first_instruction First instruction to instrument in the program
+  /// \param last_instruction Last instruction to instrument (excluded !!!)
+  /// \param cfg_info Computes local and dirty variables to discard some checks
+  /// \param pred filter predicate for instructions. If \p pred is not provided,
+  /// all instructions are instrumented. If \p pred is provided, only
+  /// instructions satisfying \p pred are instrumented.
   void instrument_instructions(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -126,13 +234,15 @@ protected:
     cfg_infot &cfg_info,
     const std::function<bool(const goto_programt::targett &)> &pred);
 
-  /// When true the symbol `x` in `DECL x` or `DEAD x` must be added explicitly
-  /// to the write set. When false, assignments to `x` are implicitly allowed.
+  /// Returns `true` if the symbol `x` in `DECL x` or `DEAD x` must be added
+  /// explicitly to the write set. Returns `false` when assignments to `x` must
+  /// be implicitly allowed.
   bool must_track_decl_or_dead(
     const goto_programt::targett &target,
     const cfg_infot &cfg_info) const;
 
   /// Instruments a `DECL x` instruction.
+  /// \pre \p target points to a `DECL` instruction
   void instrument_decl(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -141,6 +251,7 @@ protected:
     cfg_infot &cfg_info);
 
   /// Instruments a `DEAD x` instruction.
+  /// \pre \p target points to a `DEAD` instruction
   void instrument_dead(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -150,7 +261,8 @@ protected:
 
   /// Returns true iff the lhs of a `ASSIGN lhs := ...` instruction or
   /// `CALL lhs := ...` must be checked against the write set.
-  /// When false, the assignment is implicitly allowed.
+  /// Returns false if the assignment must be implicitly allowed.
+  /// Works in tandem with \ref must_track_decl_or_dead
   bool must_check_lhs(
     const source_locationt &lhs_source_location,
     source_locationt &check_source_location,
@@ -158,6 +270,8 @@ protected:
     const exprt &lhs,
     const cfg_infot &cfg_info);
 
+  /// \brief Instruments the LHS of an assignment instruction instruction by
+  /// adding an inclusion check of \p lhs in \p write_set.
   void instrument_lhs(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -166,14 +280,19 @@ protected:
     goto_programt &goto_program,
     cfg_infot &cfg_info);
 
-  /// Checks if lhs is the `dead_object`, and if the rhs
+  /// Checks if \p lhs is the `dead_object`, and if \p rhs
   /// is an `if_exprt(nondet, ptr, dead_object)` expression.
-  /// Returns `ptr` if the pattern was matched, nullptr otherwise.
+  /// Returns a pointer to the `ptr` expression if the pattern was matched,
+  /// returns `nullptr` otherwise.
   const exprt *is_dead_object_update(const exprt &lhs, const exprt &rhs);
 
-  /// Instrument the `lhs` of an `ASSIGN lhs := rhs` instruction by
-  /// adding an inclusion check of `lhs` in `write_set`.
-  /// If the rhs is an side_effect_expr(ID_allocate)
+  /// Instrument the \p lhs of an `ASSIGN lhs := rhs` instruction by
+  /// adding an inclusion check of \p lhs in \p write_set.
+  /// If \ref is_dead_object_update returns a successfull match, the matched
+  /// pointer expression is removed from \p write_set.
+  /// If \p rhs is a `side_effect_expr(ID_allocate)`, the allocated pointer gets
+  /// added to the \p write_set.
+  /// \pre \p target points to an `ASSIGN` instruction.
   void instrument_assign(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -181,22 +300,30 @@ protected:
     goto_programt &goto_program,
     cfg_infot &cfg_info);
 
-  /// Adjusts the arguments of function or function pointer call instruction
+  /// Adds the \p write_set as extra argument to a function of function pointer
+  /// call instruction.
+  /// \pre \p target points to a `CALL` instruction.
   void instrument_call_instruction(
     const exprt &write_set,
     goto_programt::targett &target,
     goto_programt &goto_program);
 
-  /// Same as \ref instrument_call_instruction but inserts a dynamic check
+  // TODO re-enable once we can have nondet-static with with arbitrary LHS
+  // expressions in the INITIALIZE_FUNCTION function
+#if 0
   /// do pass the extra write set parameter only to function pointers that point
   /// to instrumented functions that can effectively accept it.
+  /// \pre \p target points to a `CALL` instruction where the function
+  /// expression is not a \ref symbol_exprt.
   void instrument_fptr_call_instruction_dynamic_lookup(
     const exprt &write_set,
     goto_programt::targett &target,
     goto_programt &goto_program);
+#endif
 
   /// Inserts deallocation checks and a write set update before a call
   /// to the __CPROVER_deallocate function.
+  /// \pre \p target points to a `CALL __CPROVER_deallocate` instruction.
   void instrument_deallocate_call(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -206,6 +333,7 @@ protected:
   /// Instruments a `CALL lhs := function(params)` instruction by
   /// adding an inclusion check of `lhs` in `write_set`,
   /// and passing `write_set` as an extra argument to the function call.
+  /// \pre \p target points to a `CALL` instruction.
   void instrument_function_call(
     const irep_idt &function_id,
     const exprt &write_set,
@@ -216,6 +344,7 @@ protected:
   /// Instruments a `OTHER statement;` instruction.
   /// OTHER instructions can be an  array_set, array_copy, array_replace or
   /// a havoc_object instruction.
+  /// \pre \p target points to an `OTHER` instruction.
   void instrument_other(
     const irep_idt &function_id,
     const exprt &write_set,
