@@ -37,12 +37,14 @@ Author: Remi Delmas, delmarsd@amazon.com
 #include <goto-instrument/contracts/cfg_info.h>
 #include <goto-instrument/contracts/instrument_spec_assigns.h>
 #include <goto-instrument/contracts/utils.h>
+#include <goto-instrument/nondet_static.h>
 #include <linking/static_lifetime_init.h>
 
 void dfcc(
   goto_modelt &goto_model,
   const std::string &harness_id,
   const std::set<std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::set<std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &to_exclude_from_nondet_static,
@@ -59,6 +61,7 @@ void dfcc(
   dfcct{goto_model, log}.transform_goto_model(
     harness_id,
     to_check_map,
+    allow_recursive_calls,
     to_replace_map,
     apply_loop_contracts,
     to_exclude_from_nondet_static);
@@ -68,6 +71,7 @@ void dfcc(
   goto_modelt &goto_model,
   const std::string &harness_id,
   const std::map<std::string, std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::map<std::string, std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &to_exclude_from_nondet_static,
@@ -76,6 +80,7 @@ void dfcc(
   dfcct{goto_model, log}.transform_goto_model(
     harness_id,
     to_check,
+    allow_recursive_calls,
     to_replace,
     apply_loop_contracts,
     to_exclude_from_nondet_static);
@@ -114,6 +119,7 @@ dfcct::dfcct(goto_modelt &goto_model, messaget &log)
 void dfcct::check_transform_goto_model_preconditions(
   const std::string &harness_id,
   const std::map<std::string, std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::map<std::string, std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &to_exclude_from_nondet_static)
@@ -131,6 +137,7 @@ void dfcct::check_transform_goto_model_preconditions(
     log.debug() << "to replace " << pair.first << "->" << pair.second
                 << messaget::eom;
   }
+
   // TODO reactivate this once I understand how entry points work
   // Check that the goto_model entry point matches the given harness_id
   // if(!config.main.has_value())
@@ -152,53 +159,46 @@ void dfcct::check_transform_goto_model_preconditions(
   // }
 
   // check there is at most one function to check
-  if(to_check.size() > 1)
-  {
-    log.error()
-      << "dfcct::transform_goto_model_preconditions: only a single "
-         "(function,contract) pair can be checked at a time, aborting."
-      << messaget::eom;
-    throw 0;
-  }
+  PRECONDITION_WITH_DIAGNOSTICS(
+    to_check.size() <= 1,
+    "Only a single (function, contract) pair can be checked at a time, "
+    "aborting");
 
   // check that harness function exists
   PRECONDITION_WITH_DIAGNOSTICS(
     utils.function_symbol_with_body_exists(harness_id),
-    "dfcct::transform_goto_model_preconditions: harness function '" +
-      harness_id + "' either not found or has no body.");
+    "Harness function '" + harness_id + "' either not found or has no body");
 
   for(const auto &pair : to_check)
   {
     PRECONDITION_WITH_DIAGNOSTICS(
       utils.function_symbol_with_body_exists(pair.first),
-      "dfcct::transform_goto_model_preconditions: function to check '" +
-        pair.first + "' either not found or has no body.");
+      "Function to check '" + pair.first +
+        "' either not found or has no body");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       dsl_contract_handler.pure_contract_symbol_exists(pair.second),
-      "dfcct::transform_goto_model_preconditions: contract to check '" +
-        pair.second + "' not found.");
+      "Contract to check '" + pair.second + "' not found");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       pair.first != harness_id,
-      "dfcct::transform_goto_model_preconditions: function '" + pair.first +
+      "Function '" + pair.first +
         "' cannot be both be checked against a contract and be the harness");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       pair.second != harness_id,
-      "dfcct::transform_goto_model_preconditions: function '" + pair.first +
+      "Function '" + pair.first +
         "' cannot be both the contract to check and be the harness");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       to_replace.find(pair.first) == to_replace.end(),
-      "dfcct::transform_goto_model_preconditions: function '" + pair.first +
+      "Function '" + pair.first +
         "' cannot be both checked against contract and replaced by a contract");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       !instrument.do_not_instrument(pair.first),
-      "dfcct::transform_goto_model_preconditions: CPROVER function or builtin "
-      "'" +
-        pair.first + "' cannot be checked against a contract");
+      "CPROVER function or builtin '" + pair.first +
+        "' cannot be checked against a contract");
   }
 
   for(const auto &pair : to_replace)
@@ -207,34 +207,22 @@ void dfcct::check_transform_goto_model_preconditions(
     // function to have a body because only the contract is actually used
     PRECONDITION_WITH_DIAGNOSTICS(
       utils.function_symbol_exists(pair.first),
-      "dfcct::transform_goto_model_preconditions: function to replace '" +
-        pair.first + "' not found.");
+      "Function to replace '" + pair.first + "' not found");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       dsl_contract_handler.pure_contract_symbol_exists(pair.second),
-      "dfcct::transform_goto_model_preconditions: contract to replace '" +
-        pair.second + "' not found.");
+      "Contract to replace '" + pair.second + "' not found");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       pair.first != harness_id,
-      "dfcct::transform_goto_model_preconditions: function '" + pair.first +
+      "Function '" + pair.first +
         "' cannot both be replaced with a contract and be the harness");
 
     PRECONDITION_WITH_DIAGNOSTICS(
       pair.second != harness_id,
-      "dfcct::transform_goto_model_preconditions: function '" + pair.first +
+      "Function '" + pair.first +
         "' cannot both be the contract to use for replacement and be the "
         "harness");
-  }
-
-  for(const auto &id : to_exclude_from_nondet_static)
-  {
-    // for functions to replace with contracts we don't require the replaced
-    // function to have a body because only the contract is actually used
-    PRECONDITION_WITH_DIAGNOSTICS(
-      utils.symbol_exists(id),
-      "dfcct::transform_goto_model_preconditions: symbol '" + id +
-        "' to exclude from nondet-static not found.");
   }
 }
 
@@ -277,6 +265,7 @@ void dfcct::partition_function_symbols(
 void dfcct::transform_goto_model(
   const std::string &harness_id,
   const std::map<std::string, std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::map<std::string, std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &to_exclude_from_nondet_static)
@@ -284,6 +273,7 @@ void dfcct::transform_goto_model(
   check_transform_goto_model_preconditions(
     harness_id,
     to_check,
+    allow_recursive_calls,
     to_replace,
     apply_loop_contracts,
     to_exclude_from_nondet_static);
@@ -293,6 +283,14 @@ void dfcct::transform_goto_model(
                << messaget::eom;
   link_to_library(
     goto_model, log.get_message_handler(), cprover_c_library_factory);
+
+  // Make all statics nondet. This needs to be done before starting the program
+  // transformation since the instrumentation adds static variables
+  // which must keep their initial values to function as intended.
+  log.status()
+    << "Adding nondeterministic initialization of static/global variables."
+    << messaget::eom;
+  nondet_static(goto_model, to_exclude_from_nondet_static);
 
   // shortcuts
   symbol_tablet &symbol_table = goto_model.symbol_table;
@@ -338,12 +336,11 @@ void dfcct::transform_goto_model(
     log.status() << "Wrapping '" << wrapper_id << "' with contract '"
                  << contract_id << "' in CHECK mode" << messaget::eom;
 
-    swap_and_wrap.swap_and_wrap(
-      dfcc_contract_modet::CHECK,
+    swap_and_wrap.swap_and_wrap_check(
       wrapper_id,
       contract_id,
       function_pointer_contracts,
-      false /* do not allow recursive calls for now */);
+      allow_recursive_calls);
 
     if(other_symbols.find(wrapper_id) != other_symbols.end())
       other_symbols.erase(wrapper_id);
@@ -362,8 +359,7 @@ void dfcct::transform_goto_model(
     const auto &contract_id = pair.second;
     log.status() << "Wrapping '" << wrapper_id << "' with contract '"
                  << contract_id << "' in REPLACE mode" << messaget::eom;
-    swap_and_wrap.swap_and_wrap(
-      dfcc_contract_modet::REPLACE,
+    swap_and_wrap.swap_and_wrap_replace(
       wrapper_id,
       contract_id,
       function_pointer_contracts);
@@ -376,58 +372,59 @@ void dfcct::transform_goto_model(
   // swap-and-wrap function pointer contracts with themselves
   for(const auto &fp_contract : function_pointer_contracts)
   {
-    // function contracts are necessarily replaced with themselves
+    log.status() << "Discovered function pointer contract '" << fp_contract
+                 << "'" << messaget::eom;
+
+    // contracts for function pointers must be replaced with themselves
     // so we need to check that:
-    // - the corresponding function symbol exists
-    // - the corresponding pure contract symbol exists
-    // - the function symbol is not itself already swapped with something
-    // else than itself for replacement
-    // - the function symbol is not itself already swapped with any other
-    // contract for contract checking
+    // - the symbol exists as a function symbol
+    // - the symbol exists as a pure contract symbol
+    // - the function symbol is not already swapped for contract checking
+    // - the function symbol is not already swapped with another contract for
+    // replacement
 
     const auto str = id2string(fp_contract);
 
-    PRECONDITION_WITH_DIAGNOSTICS(
-      utils.function_symbol_exists(str),
-      "dfcct::transform_goto_model: function pointer contract '" + str +
-        "' not found.");
-
-    PRECONDITION_WITH_DIAGNOSTICS(
-      dsl_contract_handler.pure_contract_symbol_exists(str),
-      "dfcct::transform_goto_model_preconditions: contract to replace "
-      "'contract::" +
-        str + "' not found.");
-
+    // Is it already swapped with another function for contract checking ?
     PRECONDITION_WITH_DIAGNOSTICS(
       to_check.find(str) == to_check.end(),
-      "dfcct::transform_goto_model: function '" + str +
-        "' used as contract for function pointer cannot be "
-        "itself the object of a contract check.");
+      "Function '" + str +
+        "' used as contract for function pointer cannot be itself the object "
+        "of a contract check.");
 
-    // check if not already swapped
+
+    // Is it already swapped with another function for contract checking ?
     auto found = to_replace.find(str);
-
-    if(found == to_replace.end())
-    {
-      log.status() << "wrapping function pointer contract '" << fp_contract
-                   << "' with itself in REPLACE mode" << messaget::eom;
-
-      swap_and_wrap.swap_and_wrap(
-        dfcc_contract_modet::REPLACE,
-        fp_contract,
-        fp_contract,
-        function_pointer_contracts);
-      if(other_symbols.find(fp_contract) != other_symbols.end())
-        other_symbols.erase(fp_contract);
+    if(found != to_replace.end()) {
+      PRECONDITION_WITH_DIAGNOSTICS(
+        found->first == found->second,
+        "Function '" + str +
+          "' used as contract for function pointer already the object of a "
+          "contract replacement with '" +
+          found->second + "'");
+      log.status() << "Function pointer contract '" << fp_contract
+                   << "' already wrapped with itself in REPLACE mode"
+                   << messaget::eom;
     }
     else
     {
+      // we need to swap it with itself
       PRECONDITION_WITH_DIAGNOSTICS(
-        found->first == found->second,
-        "dfcct::transform_goto_model: function '" + str +
-          "' used as contract for function pointer cannot be "
-          "itself the object of a contract replacement with '" +
-          found->second + "'");
+        utils.function_symbol_exists(str),
+        "Function pointer contract '" + str + "' not found.");
+
+      PRECONDITION_WITH_DIAGNOSTICS(
+        dsl_contract_handler.pure_contract_symbol_exists(str),
+        "Contract to replace '" + str + "' not found.");
+
+      log.status() << "Wrapping function pointer contract '" << fp_contract
+                   << "' with itself in REPLACE mode" << messaget::eom;
+
+      swap_and_wrap.swap_and_wrap_replace(
+        fp_contract, fp_contract, function_pointer_contracts);
+      // remove it from the set of symbols to process
+      if(other_symbols.find(fp_contract) != other_symbols.end())
+        other_symbols.erase(fp_contract);
     }
   }
 
@@ -458,22 +455,29 @@ void dfcct::transform_goto_model(
 
   log.status() << "Inhibiting front-end functions" << messaget::eom;
   library.inhibit_front_end_builtins();
+  // TODO utils.inhibit_unreachable_functions(harness);
+  goto_model.goto_functions.update();
 
-  // collect set of functions which are now write set checkable
+  log.status() << "Removing SKIP instructions" << messaget::eom;
+  remove_skip(goto_model);
+  goto_model.goto_functions.update();
+
+  log.status() << "Removing unused functions" << messaget::eom;
+  // This can prune too many functions if function pointers have not been
+  // yet been removed or if the entry point is not defined.
+  // Another solution would be to rewrite the bodies of functions that seem to
+  // be unreachable into assert(false);assume(false)
+  remove_unused_functions(goto_model, message_handler);
+  goto_model.goto_functions.update();
+
+  // collect set of functions which are now instrumented
   std::set<irep_idt> instrumented_functions;
   instrument.get_instrumented_functions(instrumented_functions);
   swap_and_wrap.get_swapped_functions(instrumented_functions);
+  goto_model.goto_functions.update();
 
   // update statics and static function maps
   log.status() << "Updating CPROVER init function" << messaget::eom;
   library.create_initialize_function(instrumented_functions);
-
-  log.status() << "Removing SKIP instructions" << messaget::eom;
-  remove_skip(goto_model);
-
-  log.status() << "Removing unused functions" << messaget::eom;
-  // unsound if function pointers have not been yet been removed
-  // Another solution would be to discard the bodies of removed functions and
-  // add an assert(false) instead
-  remove_unused_functions(goto_model, message_handler);
+  goto_model.goto_functions.update();
 }

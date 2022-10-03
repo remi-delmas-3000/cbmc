@@ -59,10 +59,20 @@ class cfg_infot;
 
 #define FLAG_DFCC "dfcc"
 #define OPT_DFCC "(" FLAG_DFCC "):"
+
 // clang-format off
 #define HELP_DFCC                                                              \
-  "--dfcc               activate dynamic frame condition checking for function"\
-  "                     contracts using given function as entry point"
+  "--dfcc             activate dynamic frame condition checking for function\n"\
+  "                   contracts using given function as entry point"
+// clang-format on
+
+// clang-format off
+#define FLAG_ENFORCE_CONTRACT_REC "enforce-contract-rec"
+#define OPT_ENFORCE_CONTRACT_REC "(" FLAG_ENFORCE_CONTRACT_REC "):"
+#define HELP_ENFORCE_CONTRACT_REC                                              \
+  " --enforce-contract-rec <fun>  wrap fun with an assertion of its contract\n"\
+  "                               and assume recursive calls to fun satisfy \n"\
+  "                               the contract"
 // clang-format on
 
 /// \ingroup dfcc-module
@@ -76,6 +86,7 @@ class cfg_infot;
 /// \param harness_id proof harness name, must be the entry point of the model
 /// \param to_check set of functions to check against their contract
 /// (must contain at most one element)
+/// \param allow_recursive_calls Allow the checked function to be recursive
 /// \param to_replace set of functions to replace with their contract
 /// \param apply_loop_contracts apply loop contract transformations iff true
 /// \param exclude_from_nondet_static set of symbols to exclude when havocing
@@ -85,6 +96,7 @@ void dfcc(
   goto_modelt &goto_model,
   const std::string &harness_id,
   const std::set<std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::set<std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &exclude_from_nondet_static,
@@ -99,18 +111,20 @@ void dfcc(
 /// actual contract symbol to exist as `contract::bar` in the symbol table.
 ///
 /// \param goto_model GOTO model to transform
-/// \param harness_id proof harness name, must be the entry point of the model
+/// \param harness_id Proof harness name, must be the entry point of the model
 /// \param to_check functions-to-contract mapping for contract checking
 /// (must contain at most one element)
-/// \param to_replace functions-to-contract mapping for replacement
-/// \param apply_loop_contracts apply loop contract transformations iff true
-/// \param exclude_from_nondet_static set of symbols to exclude when havocing
+/// \param allow_recursive_calls Allow the checked function to be recursive
+/// \param to_replace Functions-to-contract mapping for replacement
+/// \param apply_loop_contracts Spply loop contract transformations iff true
+/// \param exclude_from_nondet_static Set of symbols to exclude when havocing
 /// static program symbols.
 /// \param log logger to use for debug/warning/error messages
 void dfcc(
   goto_modelt &goto_model,
   const std::string &harness_id,
   const std::map<std::string, std::string> &to_check,
+  const bool allow_recursive_calls,
   const std::map<std::string, std::string> &to_replace,
   const bool apply_loop_contracts,
   const std::set<std::string> &exclude_from_nondet_static,
@@ -136,10 +150,11 @@ public:
   /// \param harness_id proof harness name, must be the entry point of the model
   /// \param to_check functions-to-contract mapping for contract checking
   /// (must contain at most one element)
+  /// \param allow_recursive_calls Allow the checked function to be recursive
   /// \param to_replace functions-to-contract mapping for replacement
   /// \param apply_loop_contracts apply loop contract transformations iff true
-  /// \param to_exclude_from_nondet_static set of symbols to exclude when havocing
-  /// static program symbols.
+  /// \param to_exclude_from_nondet_static set of symbols to exclude when
+  /// havocing static program symbols.
   ///
   /// Transformation steps:
   /// - check preconditions on existence and absence of clash between harness,
@@ -161,6 +176,7 @@ public:
   void transform_goto_model(
     const std::string &harness_id,
     const std::map<std::string, std::string> &to_check,
+    const bool allow_recursive_calls,
     const std::map<std::string, std::string> &to_replace,
     const bool apply_loop_contracts,
     const std::set<std::string> &to_exclude_from_nondet_static);
@@ -204,6 +220,7 @@ protected:
   void check_transform_goto_model_preconditions(
     const std::string &harness_id,
     const std::map<std::string, std::string> &to_check,
+    const bool allow_recursive_calls,
     const std::map<std::string, std::string> &to_replace,
     const bool apply_loop_contracts,
     const std::set<std::string> &exclude_from_nondet_static);
