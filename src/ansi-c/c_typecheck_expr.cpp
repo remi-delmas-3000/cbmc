@@ -492,7 +492,9 @@ void c_typecheck_baset::typecheck_expr_main(exprt &expr)
   {
     // already type checked
   }
-  else if(expr.id() == ID_C_spec_assigns || expr.id() == ID_target_list)
+  else if(
+    expr.id() == ID_C_spec_assigns || expr.id() == ID_C_spec_frees ||
+    expr.id() == ID_target_list)
   {
     // already type checked
   }
@@ -2262,6 +2264,30 @@ exprt c_typecheck_baset::do_special_functions(
     {
       error().source_location = f_op.source_location();
       error() << CPROVER_PREFIX "is_fresh expects two operands; "
+              << expr.arguments().size() << "provided." << eom;
+      throw 0;
+    }
+    typecheck_function_call_arguments(expr);
+    return nil_exprt();
+  }
+  else if(identifier == CPROVER_PREFIX "is_freeable")
+  {
+    if(expr.arguments().size() != 1)
+    {
+      error().source_location = f_op.source_location();
+      error() << CPROVER_PREFIX "is_freeable expects one operand; "
+              << expr.arguments().size() << "provided." << eom;
+      throw 0;
+    }
+    typecheck_function_call_arguments(expr);
+    return nil_exprt();
+  }
+  else if(identifier == CPROVER_PREFIX "is_freed")
+  {
+    if(expr.arguments().size() != 1)
+    {
+      error().source_location = f_op.source_location();
+      error() << CPROVER_PREFIX "is_freed expects one operand; "
               << expr.arguments().size() << "provided." << eom;
       throw 0;
     }
