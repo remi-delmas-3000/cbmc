@@ -137,6 +137,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a414348bd56961176c20ac2bdddd343dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d3593d920e93f841bee945e27eb85b2"><td class="memItemLeft" align="right" valign="top">static std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a6d3593d920e93f841bee945e27eb85b2">reset</a> (std::ostream &amp;)</td></tr>
 <tr class="separator:a6d3593d920e93f841bee945e27eb85b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ee07c9847880f2360b6ebdc8bff2a6c"><td class="memItemLeft" align="right" valign="top">static std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a1ee07c9847880f2360b6ebdc8bff2a6c">cursorup</a> (std::ostream &amp;)</td></tr>
+<tr class="separator:a1ee07c9847880f2360b6ebdc8bff2a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad42d9d885090d609d449ffc17a8fb0c7"><td class="memItemLeft" align="right" valign="top">static std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#ad42d9d885090d609d449ffc17a8fb0c7">cleareol</a> (std::ostream &amp;)</td></tr>
+<tr class="separator:ad42d9d885090d609d449ffc17a8fb0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a903505f80519d9c27daf9528473aac62"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a903505f80519d9c27daf9528473aac62">is_terminal</a> ()</td></tr>
 <tr class="separator:a903505f80519d9c27daf9528473aac62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a093a646b91107e87d57ed51fcdff59f2"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a093a646b91107e87d57ed51fcdff59f2">use_SGR</a> ()</td></tr>
@@ -158,6 +162,10 @@ Static Protected Attributes</h2></td></tr>
 <tr class="separator:ac27878a00388898426005e63790e38aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31f20dfbb681a1fa85a6c88ac545f138"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a31f20dfbb681a1fa85a6c88ac545f138">_init_done</a> = false</td></tr>
 <tr class="separator:a31f20dfbb681a1fa85a6c88ac545f138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a066eda798d48376cfc2301c74c2b5a85"><td class="memItemLeft" align="right" valign="top">static std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a066eda798d48376cfc2301c74c2b5a85">_width</a></td></tr>
+<tr class="separator:a066eda798d48376cfc2301c74c2b5a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb537dc92fb668141e1906be441842ac"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#acb537dc92fb668141e1906be441842ac">_width_is_set</a> = false</td></tr>
+<tr class="separator:acb537dc92fb668141e1906be441842ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e726f64f9e3155ca7712800e790d6fe"><td class="memItemLeft" align="right" valign="top">static std::ostream *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a4e726f64f9e3155ca7712800e790d6fe">_out</a> = nullptr</td></tr>
 <tr class="separator:a4e726f64f9e3155ca7712800e790d6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36d551e46b783c671bbc2d842ae5be81"><td class="memItemLeft" align="right" valign="top">static std::ostream *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconsolet.html#a36d551e46b783c671bbc2d842ae5be81">_err</a> = nullptr</td></tr>
@@ -191,7 +199,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00102">102</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00105">105</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -219,7 +227,63 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00150">150</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00153">153</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad42d9d885090d609d449ffc17a8fb0c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad42d9d885090d609d449ffc17a8fb0c7">&#9670;&nbsp;</a></span>cleareol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; consolet::cleareol </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00191">191</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a1ee07c9847880f2360b6ebdc8bff2a6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ee07c9847880f2360b6ebdc8bff2a6c">&#9670;&nbsp;</a></span>cursorup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; consolet::cursorup </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00185">185</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -247,7 +311,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00110">110</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00113">113</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -274,7 +338,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00054">54</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00061">61</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -302,7 +366,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00158">158</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00161">161</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -330,7 +394,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00118">118</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00121">121</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -357,7 +421,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00071">71</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00074">74</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -384,7 +448,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00036">36</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00043">43</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -412,7 +476,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00142">142</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00145">145</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -439,7 +503,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00048">48</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00055">55</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -467,7 +531,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00126">126</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00129">129</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -495,7 +559,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00174">174</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00177">177</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -523,7 +587,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00166">166</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00169">169</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -550,7 +614,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00042">42</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00049">49</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -578,7 +642,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00213">213</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00232">232</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -605,7 +669,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00182">182</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00197">197</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -633,7 +697,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00134">134</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8cpp_source.html#l00137">137</a> of file <a class="el" href="console_8cpp_source.html">console.cpp</a>.</p>
 
 </div>
 </div>
@@ -658,7 +722,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00086">86</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00095">95</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +746,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00084">84</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00091">91</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -706,7 +770,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00082">82</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00089">89</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -730,7 +794,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00085">85</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00094">94</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
@@ -754,7 +818,55 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00083">83</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00090">90</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+
+</div>
+</div>
+<a id="a066eda798d48376cfc2301c74c2b5a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a066eda798d48376cfc2301c74c2b5a85">&#9670;&nbsp;</a></span>_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t consolet::_width</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00092">92</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
+
+</div>
+</div>
+<a id="acb537dc92fb668141e1906be441842ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb537dc92fb668141e1906be441842ac">&#9670;&nbsp;</a></span>_width_is_set</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool consolet::_width_is_set = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="console_8h_source.html#l00093">93</a> of file <a class="el" href="console_8h_source.html">console.h</a>.</p>
 
 </div>
 </div>
