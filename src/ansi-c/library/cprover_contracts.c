@@ -1194,9 +1194,13 @@ __CPROVER_bool __CPROVER_contracts_is_fresh(
   __CPROVER_size_t size,
   __CPROVER_contracts_write_set_ptr_t write_set)
 {
-  if(!write_set)
-    return __VERIFIER_nondet_bool();
 __CPROVER_HIDE:;
+  __CPROVER_assert(
+    (write_set != 0) & ((write_set->assume_requires_ctx == 1) |
+                        (write_set->assert_requires_ctx == 1) |
+                        (write_set->assume_ensures_ctx == 1) |
+                        (write_set->assert_ensures_ctx == 1)),
+    "__CPROVER_is_fresh is used only in requires or ensures clauses");
 #ifdef DFCC_DEBUG
   __CPROVER_assert(
     __CPROVER_rw_ok(write_set, sizeof(__CPROVER_contracts_write_set_t)),
@@ -1451,4 +1455,36 @@ __CPROVER_HIDE:;
 #endif
   }
 }
-#endif
+
+/// \brief Implementation of the `obeys_contract` front-end predicate.
+/// \return True iff a function pointer points to the specified contract.
+///
+/// \details If called in an assumption context, translates to an assignment
+/// `function_pointer = contract`. If called in an assertion context, translates
+/// to an `function_pointer == contract`.
+__CPROVER_bool __CPROVER_contracts_obeys_contract(
+  void (**function_pointer)(void),
+  void (*contract)(void),
+  __CPROVER_contracts_write_set_ptr_t set)
+{
+__CPROVER_HIDE:;
+  __CPROVER_assert(
+    (set != 0) &
+      ((set->assume_requires_ctx == 1) | (set->assert_requires_ctx == 1) |
+       (set->assume_ensures_ctx == 1) | (set->assert_ensures_ctx == 1)),
+    "__CPROVER_obeys_contract is used only in requires or ensures clauses");
+  if((set->assume_requires_ctx == 1) | (set->assume_ensures_ctx == 1))
+  {
+    if(*function_pointer != 0)
+    {
+      *function_pointer = contract;
+      return 1;
+    }
+    return 0;
+  }
+  else
+  {
+    return *function_pointer == contract;
+  }
+}
+#endif // __CPROVER_contracts_library_defined
