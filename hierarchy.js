@@ -210,6 +210,7 @@ var hierarchy =
     [ "cfg_dominators_templatet< P, T, false >", "classcfg__dominators__templatet.html", null ],
     [ "cfg_infot", "classcfg__infot.html", [
       [ "function_cfg_infot", "classfunction__cfg__infot.html", null ],
+      [ "goto_program_cfg_infot", "classgoto__program__cfg__infot.html", null ],
       [ "loop_cfg_infot", "classloop__cfg__infot.html", null ]
     ] ],
     [ "cfg_instruction_to_dense_integert< T >", "classcfg__instruction__to__dense__integert.html", null ],
@@ -265,15 +266,15 @@ var hierarchy =
     [ "concurrency_instrumentationt", "classconcurrency__instrumentationt.html", null ],
     [ "goto_check_ct::conditiont", "structgoto__check__ct_1_1conditiont.html", null ],
     [ "cone_of_influencet", "classcone__of__influencet.html", null ],
-    [ "string_refinementt::configt", "structstring__refinementt_1_1configt.html", [
-      [ "string_refinementt::infot", "structstring__refinementt_1_1infot.html", null ]
-    ] ],
-    [ "configt", "classconfigt.html", null ],
     [ "bv_refinementt::configt", "structbv__refinementt_1_1configt.html", [
       [ "bv_refinementt::infot", "structbv__refinementt_1_1infot.html", [
         [ "string_refinementt::infot", "structstring__refinementt_1_1infot.html", null ]
       ] ]
     ] ],
+    [ "string_refinementt::configt", "structstring__refinementt_1_1configt.html", [
+      [ "string_refinementt::infot", "structstring__refinementt_1_1infot.html", null ]
+    ] ],
+    [ "configt", "classconfigt.html", null ],
     [ "conflict_providert", "classconflict__providert.html", [
       [ "prop_conv_solvert", "classprop__conv__solvert.html", [
         [ "equalityt", "classequalityt.html", [
@@ -412,6 +413,17 @@ var hierarchy =
     [ "destructor_treet", "classdestructor__treet.html", null ],
     [ "destructt< I, pointee_baset, Ts >", "structdestructt.html", null ],
     [ "destructt< 0, pointee_baset, Ts... >", "structdestructt_3_010_00_01pointee__baset_00_01_ts_8_8_8_01_4.html", null ],
+    [ "dfcc_contract_functionst", "classdfcc__contract__functionst.html", null ],
+    [ "dfcc_contract_handlert", "classdfcc__contract__handlert.html", null ],
+    [ "dfcc_instrumentt", "classdfcc__instrumentt.html", null ],
+    [ "dfcc_is_freeablet", "classdfcc__is__freeablet.html", null ],
+    [ "dfcc_is_fresht", "classdfcc__is__fresht.html", null ],
+    [ "dfcc_libraryt", "classdfcc__libraryt.html", null ],
+    [ "dfcc_spec_functionst", "classdfcc__spec__functionst.html", null ],
+    [ "dfcc_swap_and_wrapt", "classdfcc__swap__and__wrapt.html", null ],
+    [ "dfcc_utilst", "classdfcc__utilst.html", null ],
+    [ "dfcc_wrapper_programt", "classdfcc__wrapper__programt.html", null ],
+    [ "dfcct", "classdfcct.html", null ],
     [ "diagnostics_helpert< T >", "structdiagnostics__helpert.html", null ],
     [ "diagnostics_helpert< char * >", "structdiagnostics__helpert_3_01char_01_5_01_4.html", null ],
     [ "diagnostics_helpert< char[N]>", "structdiagnostics__helpert_3_01char_0f_n_0e_4.html", null ],
@@ -937,6 +949,9 @@ var hierarchy =
       [ "cmdlinet::option_namest::option_names_iteratort", "structcmdlinet_1_1option__namest_1_1option__names__iteratort.html", null ],
       [ "dense_integer_mapt< K, V, KeyToDenseInteger >::iterator_templatet< UnderlyingIterator, UnderlyingValue >", "classdense__integer__mapt_1_1iterator__templatet.html", null ]
     ] ],
+    [ "std::list< T >::iterator", null, [
+      [ "instruction_location_numbert", "structinstruction__location__numbert.html", null ]
+    ] ],
     [ "symbol_table_baset::iteratort", "classsymbol__table__baset_1_1iteratort.html", null ],
     [ "jar_filet", "classjar__filet.html", null ],
     [ "jar_poolt", "classjar__poolt.html", null ],
@@ -1140,8 +1155,8 @@ var hierarchy =
     [ "nfat< char >", "structnfat.html", null ],
     [ "string_dependenciest::node_hash", "structstring__dependenciest_1_1node__hash.html", null ],
     [ "local_cfgt::nodet", "classlocal__cfgt_1_1nodet.html", null ],
-    [ "unsigned_union_find::nodet", "structunsigned__union__find_1_1nodet.html", null ],
     [ "string_dependenciest::nodet", "classstring__dependenciest_1_1nodet.html", null ],
+    [ "unsigned_union_find::nodet", "structunsigned__union__find_1_1nodet.html", null ],
     [ "cfg_dominators_templatet< P, T, post_dom >::nodet", "structcfg__dominators__templatet_1_1nodet.html", null ],
     [ "non_sharing_treet< derivedt, named_subtreest >", "classnon__sharing__treet.html", null ],
     [ "nondet_instruction_infot", "classnondet__instruction__infot.html", null ],
@@ -1175,8 +1190,8 @@ var hierarchy =
     [ "cmdlinet::option_namest", "structcmdlinet_1_1option__namest.html", null ],
     [ "optionst", "classoptionst.html", null ],
     [ "cmdlinet::optiont", "structcmdlinet_1_1optiont.html", null ],
-    [ "smt_core_theoryt::ort", "structsmt__core__theoryt_1_1ort.html", null ],
     [ "smt_bit_vector_theoryt::ort", "structsmt__bit__vector__theoryt_1_1ort.html", null ],
+    [ "smt_core_theoryt::ort", "structsmt__core__theoryt_1_1ort.html", null ],
     [ "osx_fat_readert", "classosx__fat__readert.html", null ],
     [ "osx_mach_o_readert", "classosx__mach__o__readert.html", null ],
     [ "overflow_instrumentert", "classoverflow__instrumentert.html", null ],
@@ -1234,8 +1249,8 @@ var hierarchy =
     [ "polynomialt", "classpolynomialt.html", null ],
     [ "java_bytecode_parsert::pool_entryt", "structjava__bytecode__parsert_1_1pool__entryt.html", null ],
     [ "postconditiont", "classpostconditiont.html", null ],
-    [ "bv_pointerst::postponedt", "structbv__pointerst_1_1postponedt.html", null ],
     [ "bv_pointers_widet::postponedt", "structbv__pointers__widet_1_1postponedt.html", null ],
+    [ "bv_pointerst::postponedt", "structbv__pointerst_1_1postponedt.html", null ],
     [ "preconditiont", "classpreconditiont.html", null ],
     [ "prefix_filtert", "classprefix__filtert.html", null ],
     [ "memory_snapshot_harness_generatort::preordert< Key >", "structmemory__snapshot__harness__generatort_1_1preordert.html", null ],
@@ -1852,6 +1867,7 @@ var hierarchy =
     [ "smt_index_const_downcast_visitort", "classsmt__index__const__downcast__visitort.html", [
       [ "smt_index_output_visitort", "classsmt__index__output__visitort.html", null ]
     ] ],
+    [ "smt_is_dynamic_objectt", "structsmt__is__dynamic__objectt.html", null ],
     [ "smt_logic_const_downcast_visitort", "classsmt__logic__const__downcast__visitort.html", [
       [ "smt_logic_to_string_convertert", "classsmt__logic__to__string__convertert.html", null ]
     ] ],
@@ -1911,12 +1927,12 @@ var hierarchy =
     [ "clauset::stept", "structclauset_1_1stept.html", null ],
     [ "statement_list_typecheckt::stl_jump_locationt", "structstatement__list__typecheckt_1_1stl__jump__locationt.html", null ],
     [ "statement_list_typecheckt::stl_label_locationt", "structstatement__list__typecheckt_1_1stl__label__locationt.html", null ],
-    [ "smt_check_sat_response_kindt::storert< derivedt >", "classsmt__check__sat__response__kindt_1_1storert.html", null ],
-    [ "smt_optiont::storert< derivedt >", "classsmt__optiont_1_1storert.html", null ],
     [ "smt_logict::storert< derivedt >", "classsmt__logict_1_1storert.html", null ],
+    [ "smt_check_sat_response_kindt::storert< derivedt >", "classsmt__check__sat__response__kindt_1_1storert.html", null ],
     [ "smt_sortt::storert< derivedt >", "classsmt__sortt_1_1storert.html", null ],
     [ "smt_termt::storert< derivedt >", "classsmt__termt_1_1storert.html", null ],
     [ "smt_indext::storert< derivedt >", "classsmt__indext_1_1storert.html", null ],
+    [ "smt_optiont::storert< derivedt >", "classsmt__optiont_1_1storert.html", null ],
     [ "smt_termt::storert< smt_assert_commandt >", "classsmt__termt_1_1storert.html", [
       [ "smt_assert_commandt", "classsmt__assert__commandt.html", null ],
       [ "smt_get_value_commandt", "classsmt__get__value__commandt.html", null ]
@@ -2074,13 +2090,13 @@ var hierarchy =
     [ "union_find< exprt, irep_hash >", "classunion__find.html", null ],
     [ "union_find< irep_idt >", "classunion__find.html", null ],
     [ "union_find_replacet", "classunion__find__replacet.html", null ],
-    [ "float_bvt::unpacked_floatt", "structfloat__bvt_1_1unpacked__floatt.html", [
-      [ "float_bvt::biased_floatt", "structfloat__bvt_1_1biased__floatt.html", null ],
-      [ "float_bvt::unbiased_floatt", "structfloat__bvt_1_1unbiased__floatt.html", null ]
-    ] ],
     [ "float_utilst::unpacked_floatt", "structfloat__utilst_1_1unpacked__floatt.html", [
       [ "float_utilst::biased_floatt", "structfloat__utilst_1_1biased__floatt.html", null ],
       [ "float_utilst::unbiased_floatt", "structfloat__utilst_1_1unbiased__floatt.html", null ]
+    ] ],
+    [ "float_bvt::unpacked_floatt", "structfloat__bvt_1_1unpacked__floatt.html", [
+      [ "float_bvt::biased_floatt", "structfloat__bvt_1_1biased__floatt.html", null ],
+      [ "float_bvt::unbiased_floatt", "structfloat__bvt_1_1unbiased__floatt.html", null ]
     ] ],
     [ "smt_bit_vector_theoryt::unsigned_dividet", "structsmt__bit__vector__theoryt_1_1unsigned__dividet.html", null ],
     [ "smt_bit_vector_theoryt::unsigned_greater_than_or_equalt", "structsmt__bit__vector__theoryt_1_1unsigned__greater__than__or__equalt.html", null ],
