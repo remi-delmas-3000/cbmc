@@ -35,6 +35,15 @@ protected:
   namespacet ns;
 
 public:
+  /// \brief Genrate a body `assert(false); assume(false);`
+  /// for the given \p function_id.
+  /// \param function_id function to generate the body for
+  /// \param source_location source location to use for the assertion.
+  /// Must define the property class, comment for the assertion, etc.
+  void gen_fatal_assertion_body(
+    const irep_idt &function_id,
+    const source_locationt &source_location);
+
   /// Returns true iff the given symbol exists and satisfies requirements.
   const bool symbol_exists(
     const irep_idt &function_id,

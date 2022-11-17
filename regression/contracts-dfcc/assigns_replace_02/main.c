@@ -9,7 +9,7 @@ int main()
 {
   int n;
   int m = 4;
-  bar(&n);
+  foo(&n);
   assert(m == 4);
 
   return 0;

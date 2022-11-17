@@ -340,10 +340,20 @@ void dfcc_instrumentt::instrument_function_body(
 
   if(!goto_function.body_available())
   {
-    log.warning() << "DFCC instrumentation: '" << function_id
-                  << "' body is not available. Results may be unsound if the "
-                     "actual function has side effects."
-                  << messaget::eom;
+    // we interpret this as "the function should be unreachable"
+    // create fatal assertion code block as body
+    const auto &function_location =
+      utils.get_function_symbol(function_id).location;
+    source_locationt sl;
+    sl.set_property_class("reachability");
+    sl.set_function(function_id);
+    sl.set_line(0);
+    sl.set_column(0);
+    sl.set_file(function_location.get_file());
+    sl.set_working_directory(function_location.get_working_directory());
+    sl.set_comment(
+      "Function " + id2string(function_id) + " should not be reachable");
+    utils.gen_fatal_assertion_body(function_id, sl);
     return;
   }
 

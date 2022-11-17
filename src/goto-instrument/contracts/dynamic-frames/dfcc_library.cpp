@@ -493,9 +493,6 @@ void dfcc_libraryt::inhibit_front_end_builtins()
     const auto &fid = it.first;
     if(goto_model.symbol_table.has_symbol(fid))
     {
-      // make sure parameter symbols exist
-      utils.fix_parameters_symbols(fid);
-
       // create fatal assertion code block as body
       source_locationt sl;
       sl.set_function(fid);
@@ -504,16 +501,7 @@ void dfcc_libraryt::inhibit_front_end_builtins()
       sl.set_comment(
         "Built-in " + id2string(fid) +
         " should not be called after contracts transformation");
-      auto block = create_fatal_assertion(false_exprt(), sl);
-      auto &symbol = goto_model.symbol_table.get_writeable_ref(fid);
-      symbol.value = block;
-
-      // convert the function
-      goto_convert(
-        fid,
-        goto_model.symbol_table,
-        goto_model.goto_functions,
-        message_handler);
+      utils.gen_fatal_assertion_body(fid, sl);
     }
   }
 }

@@ -42,6 +42,28 @@ dfcc_utilst::dfcc_utilst(
 {
 }
 
+void dfcc_utilst::gen_fatal_assertion_body(
+  const irep_idt &function_id,
+  const source_locationt &source_location)
+{
+  PRECONDITION(goto_model.symbol_table.has_symbol(function_id));
+
+  // make sure parameter symbols exist
+  fix_parameters_symbols(function_id);
+
+  // create fatal assertion code block as body
+  auto block = create_fatal_assertion(false_exprt(), source_location);
+  auto &symbol = goto_model.symbol_table.get_writeable_ref(function_id);
+  symbol.value = block;
+
+  // convert the function
+  goto_convert(
+    function_id,
+    goto_model.symbol_table,
+    goto_model.goto_functions,
+    message_handler);
+}
+
 const bool dfcc_utilst::symbol_exists(
   const irep_idt &name,
   const bool require_has_code_type,
