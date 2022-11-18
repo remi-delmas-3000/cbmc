@@ -1999,7 +1999,6 @@ void c_typecheck_baset::typecheck_obeys_contract_call(
   // the first parameter must be a function pointer typed assignable path
   // expression, without side effects or ternary operator
   auto &function_pointer = expr.arguments().at(0);
-  typecheck_expr(function_pointer);
 
   if(
     function_pointer.type().id() != ID_pointer ||
@@ -2030,7 +2029,6 @@ void c_typecheck_baset::typecheck_obeys_contract_call(
 
   // second parameter must be the address of a function symbol
   auto &address_of_contract = expr.arguments().at(1);
-  typecheck_expr(address_of_contract);
 
   if(
     address_of_contract.id() != ID_address_of ||
