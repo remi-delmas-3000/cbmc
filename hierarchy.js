@@ -154,7 +154,9 @@ var hierarchy =
     [ "ansi_c_parse_treet", "classansi__c__parse__treet.html", null ],
     [ "ansi_c_scopet", "classansi__c__scopet.html", null ],
     [ "configt::ansi_ct", "structconfigt_1_1ansi__ct.html", null ],
+    [ "api_messaget", "structapi__messaget.html", null ],
     [ "api_optionst", "classapi__optionst.html", null ],
+    [ "api_session_implementationt", "structapi__session__implementationt.html", null ],
     [ "api_sessiont", "structapi__sessiont.html", null ],
     [ "bv_refinementt::approximationt", "structbv__refinementt_1_1approximationt.html", null ],
     [ "goto_cc_cmdlinet::argt", "structgoto__cc__cmdlinet_1_1argt.html", null ],
@@ -983,6 +985,7 @@ var hierarchy =
     [ "labelt", "structlabelt.html", null ],
     [ "java_bytecode_parse_treet::classt::lambda_method_handlet", "structjava__bytecode__parse__treet_1_1classt_1_1lambda__method__handlet.html", null ],
     [ "language_entryt", "structlanguage__entryt.html", null ],
+    [ "language_filest", "classlanguage__filest.html", null ],
     [ "language_filet", "classlanguage__filet.html", null ],
     [ "language_modulet", "classlanguage__modulet.html", null ],
     [ "lazy_class_to_declared_symbols_mapt", "classlazy__class__to__declared__symbols__mapt.html", null ],
@@ -1021,11 +1024,11 @@ var hierarchy =
       [ "natural_loops_templatet< P, T >", "classnatural__loops__templatet.html", null ]
     ] ],
     [ "c_wranglert::loop_contract_clauset", "structc__wranglert_1_1loop__contract__clauset.html", null ],
+    [ "loop_contracts_synthesizer_baset", "classloop__contracts__synthesizer__baset.html", [
+      [ "enumerative_loop_contracts_synthesizert", "classenumerative__loop__contracts__synthesizert.html", null ]
+    ] ],
     [ "loop_idt", "structloop__idt.html", null ],
     [ "framet::loop_infot", "structframet_1_1loop__infot.html", null ],
-    [ "loop_invariant_synthesizer_baset", "classloop__invariant__synthesizer__baset.html", [
-      [ "enumerative_loop_invariant_synthesizert", "classenumerative__loop__invariant__synthesizert.html", null ]
-    ] ],
     [ "loop_templatet< T >", "classloop__templatet.html", [
       [ "loop_with_parent_analysis_templatet< T >", "classloop__with__parent__analysis__templatet.html", null ]
     ] ],
@@ -1052,6 +1055,7 @@ var hierarchy =
     [ "merged_irep_hash", "structmerged__irep__hash.html", null ],
     [ "merged_irepst", "classmerged__irepst.html", null ],
     [ "message_handlert", "classmessage__handlert.html", [
+      [ "api_message_handlert", "classapi__message__handlert.html", null ],
       [ "console_message_handlert", "classconsole__message__handlert.html", [
         [ "cl_message_handlert", "classcl__message__handlert.html", null ],
         [ "gcc_message_handlert", "classgcc__message__handlert.html", null ]
@@ -1070,7 +1074,6 @@ var hierarchy =
         [ "cleanert", "classcleanert.html", null ],
         [ "goto_convert_functionst", "classgoto__convert__functionst.html", null ]
       ] ],
-      [ "language_filest", "classlanguage__filest.html", null ],
       [ "languaget", "classlanguaget.html", [
         [ "ansi_c_languaget", "classansi__c__languaget.html", null ],
         [ "cpp_languaget", "classcpp__languaget.html", null ],
@@ -1078,16 +1081,6 @@ var hierarchy =
         [ "jsil_languaget", "classjsil__languaget.html", null ],
         [ "json_symtab_languaget", "classjson__symtab__languaget.html", null ],
         [ "statement_list_languaget", "classstatement__list__languaget.html", null ]
-      ] ],
-      [ "parsert", "classparsert.html", [
-        [ "ansi_c_parsert", "classansi__c__parsert.html", null ],
-        [ "assembler_parsert", "classassembler__parsert.html", null ],
-        [ "cpp_parsert", "classcpp__parsert.html", null ],
-        [ "java_bytecode_parsert", "classjava__bytecode__parsert.html", null ],
-        [ "jsil_parsert", "classjsil__parsert.html", null ],
-        [ "json_parsert", "classjson__parsert.html", null ],
-        [ "statement_list_parsert", "classstatement__list__parsert.html", null ],
-        [ "xml_parsert", "classxml__parsert.html", null ]
       ] ],
       [ "preprocessort", "classpreprocessort.html", null ],
       [ "safety_checkert", "classsafety__checkert.html", null ],
@@ -1203,6 +1196,16 @@ var hierarchy =
     ] ],
     [ "string_constraint_generatort::parseint_argumentst", "structstring__constraint__generatort_1_1parseint__argumentst.html", null ],
     [ "Parser", "class_parser.html", null ],
+    [ "parsert", "classparsert.html", [
+      [ "ansi_c_parsert", "classansi__c__parsert.html", null ],
+      [ "assembler_parsert", "classassembler__parsert.html", null ],
+      [ "cpp_parsert", "classcpp__parsert.html", null ],
+      [ "java_bytecode_parsert", "classjava__bytecode__parsert.html", null ],
+      [ "jsil_parsert", "classjsil__parsert.html", null ],
+      [ "json_parsert", "classjson__parsert.html", null ],
+      [ "statement_list_parsert", "classstatement__list__parsert.html", null ],
+      [ "xml_parsert", "classxml__parsert.html", null ]
+    ] ],
     [ "partial_order_concurrencyt", "classpartial__order__concurrencyt.html", [
       [ "memory_model_baset", "classmemory__model__baset.html", [
         [ "memory_model_sct", "classmemory__model__sct.html", [

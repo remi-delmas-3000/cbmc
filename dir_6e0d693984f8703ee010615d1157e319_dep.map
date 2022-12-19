@@ -1,7 +1,7 @@
 <map id="/home/runner/work/cbmc/cbmc/src/goto&#45;cc" name="/home/runner/work/cbmc/cbmc/src/goto&#45;cc">
 <area shape="rect" id="node1" href="dir_245199dd16b1f3757d78c9dc7747589d.html" title="langapi" alt="" coords="40,532,112,580"/>
 <area shape="rect" id="node4" href="dir_b7878ad5ecbf2506f4125b9d34c97e45.html" title="util" alt="" coords="224,628,296,676"/>
-<area shape="rect" id="edge10-headlabel" href="dir_000029_000035.html" title="14" alt="" coords="203,609,220,624"/>
+<area shape="rect" id="edge10-headlabel" href="dir_000029_000035.html" title="13" alt="" coords="203,609,220,624"/>
 <area shape="rect" id="node2" href="dir_7ec25742ab1d47a7a6823282222807fd.html" title="linking" alt="" coords="179,244,251,292"/>
 <area shape="rect" id="edge1-headlabel" href="dir_000031_000029.html" title="1" alt="" coords="73,505,82,520"/>
 <area shape="rect" id="node3" href="dir_807c5b2c83e0c14a10083f60cf67ca05.html" title="goto&#45;programs" alt="" coords="106,340,225,388"/>
@@ -24,12 +24,12 @@
 <area shape="rect" id="edge11-headlabel" href="dir_000012_000029.html" title="3" alt="" coords="121,520,130,535"/>
 <area shape="rect" id="edge12-headlabel" href="dir_000012_000031.html" title="4" alt="" coords="219,305,228,320"/>
 <area shape="rect" id="edge13-headlabel" href="dir_000012_000024.html" title="12" alt="" coords="172,401,189,416"/>
-<area shape="rect" id="edge14-headlabel" href="dir_000012_000035.html" title="225" alt="" coords="242,601,268,615"/>
+<area shape="rect" id="edge14-headlabel" href="dir_000012_000035.html" title="226" alt="" coords="242,601,268,615"/>
 <area shape="rect" id="node8" href="dir_6e0d693984f8703ee010615d1157e319.html" title="goto&#45;cc" alt="" coords="232,52,304,100"/>
 <area shape="rect" id="edge20-headlabel" href="dir_000019_000029.html" title="4" alt="" coords="63,505,72,519"/>
 <area shape="rect" id="edge21-headlabel" href="dir_000019_000031.html" title="3" alt="" coords="215,218,224,232"/>
 <area shape="rect" id="edge22-headlabel" href="dir_000019_000024.html" title="7" alt="" coords="155,312,165,327"/>
-<area shape="rect" id="edge23-headlabel" href="dir_000019_000035.html" title="83" alt="" coords="307,618,324,633"/>
+<area shape="rect" id="edge23-headlabel" href="dir_000019_000035.html" title="88" alt="" coords="307,618,324,633"/>
 <area shape="rect" id="edge24-headlabel" href="dir_000019_000028.html" title="1" alt="" coords="351,418,360,433"/>
 <area shape="rect" id="edge25-headlabel" href="dir_000019_000016.html" title="1" alt="" coords="272,122,281,137"/>
 <area shape="rect" id="edge26-headlabel" href="dir_000019_000012.html" title="4" alt="" coords="236,421,246,435"/>
