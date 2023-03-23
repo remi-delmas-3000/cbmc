@@ -1168,14 +1168,6 @@ void goto_instrument_parse_optionst::instrument_goto_program()
         "Use a single " FLAG_DFCC " option");
     }
 
-    if(cmdline.isset(FLAG_LOOP_CONTRACTS))
-    {
-      throw invalid_command_line_argument_exceptiont(
-        "Incompatible options detected",
-        "--" FLAG_DFCC " and --" FLAG_LOOP_CONTRACTS,
-        "Use either --" FLAG_DFCC " or --" FLAG_LOOP_CONTRACTS);
-    }
-
     do_indirect_call_and_rtti_removal();
 
     const irep_idt harness_id(cmdline.get_value(FLAG_DFCC));
@@ -1206,6 +1198,16 @@ void goto_instrument_parse_optionst::instrument_goto_program()
       cmdline.get_values("nondet-static-exclude").begin(),
       cmdline.get_values("nondet-static-exclude").end());
 
+    if(
+      cmdline.isset(FLAG_LOOP_CONTRACTS) &&
+      cmdline.isset(FLAG_LOOP_CONTRACTS_NO_UNWIND))
+    {
+      log.warning() << "**** WARNING: transformed loops will not be unwound "
+                    << "after applying loop contracts. Remember to unwind "
+                    << "them at least twice to pass unwinding-assertions."
+                    << messaget::eom;
+    }
+
     dfcc(
       options,
       goto_model,
@@ -1214,7 +1216,8 @@ void goto_instrument_parse_optionst::instrument_goto_program()
                          : optionalt<irep_idt>{to_enforce.front()},
       allow_recursive_calls,
       to_replace,
-      false,
+      cmdline.isset(FLAG_LOOP_CONTRACTS),
+      !cmdline.isset(FLAG_LOOP_CONTRACTS_NO_UNWIND),
       to_exclude_from_nondet_static,
       log.get_message_handler());
   }
