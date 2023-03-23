@@ -32,6 +32,7 @@ dfcc_instrument_loopt::dfcc_instrument_loopt(
   dfcc_spec_functionst &spec_functions,
   dfcc_contract_clauses_codegent &contract_clauses_codegen)
   : goto_model(goto_model),
+    message_handler(message_handler),
     log(message_handler),
     utils(utils),
     library(library),
@@ -94,7 +95,7 @@ void dfcc_instrument_loopt::operator()(
                               .symbol_expr();
 
   // Temporary variables for storing the multidimensional decreases clause
-  // at the start of and end of a loop body.
+  // at the start of and end of a loop body
   exprt::operandst decreases_clauses = loop.decreases;
   std::vector<symbol_exprt> old_decreases_vars, new_decreases_vars;
   for(const auto &clause : decreases_clauses)
@@ -121,10 +122,10 @@ void dfcc_instrument_loopt::operator()(
     new_decreases_vars.push_back(new_decreases_var);
   }
 
-  // Convert the assigns clause to the required type.
+  // convert the assigns clause to the required type
   exprt::operandst assigns(loop.assigns.begin(), loop.assigns.end());
 
-  // Add local statics to the assigns clause.
+  // add local statics to the assigns clause
   for(auto &local_static : local_statics)
   {
     assigns.push_back(local_static);
@@ -146,24 +147,26 @@ void dfcc_instrument_loopt::operator()(
   contract_clauses_codegen.gen_spec_assigns_instructions(
     language_mode, assigns, assigns_instrs);
 
+  const symbol_exprt &addr_of_loop_write_set = loop.addr_of_write_set_var;
   spec_functions.generate_havoc_instructions(
     function_id,
     language_mode,
     symbol_table.get_writeable_ref(function_id).module,
     assigns_instrs,
-    loop.addr_of_write_set_var,
+    addr_of_loop_write_set,
     havoc_instrs,
     nof_targets);
   spec_functions.to_spec_assigns_instructions(
-    loop.addr_of_write_set_var, language_mode, assigns_instrs, nof_targets);
+    addr_of_loop_write_set, language_mode, assigns_instrs, nof_targets);
   write_set_populate_instrs.copy_from(assigns_instrs);
 
-  // Replace bound variables by fresh instances in quantified formulas.
+  // replace bound variables by fresh instances in quantified formulas
   exprt invariant = loop.invariant;
   if(has_subexpr(invariant, ID_exists) || has_subexpr(invariant, ID_forall))
     add_quantified_variable(symbol_table, invariant, language_mode);
 
   // ---------- Add instrumented instructions ----------
+  const symbol_exprt &loop_write_set = loop.write_set_var;
   goto_programt::targett loop_latch =
     loop.find_latch(goto_function.body).value();
 
@@ -176,8 +179,8 @@ void dfcc_instrument_loopt::operator()(
     write_set_populate_instrs,
     invariant,
     assigns,
-    loop.write_set_var,
-    loop.addr_of_write_set_var,
+    loop_write_set,
+    addr_of_loop_write_set,
     entered_loop,
     initial_invariant,
     in_base_case,
@@ -194,7 +197,7 @@ void dfcc_instrument_loopt::operator()(
     havoc_instrs,
     invariant,
     decreases_clauses,
-    loop.addr_of_write_set_var,
+    addr_of_loop_write_set,
     outer_write_set,
     initial_invariant,
     in_base_case,
@@ -222,8 +225,9 @@ void dfcc_instrument_loopt::operator()(
     cbmc_loop_id,
     goto_function,
     head,
-    loop.write_set_var,
-    loop.addr_of_write_set_var,
+    decreases_clauses,
+    loop_write_set,
+    addr_of_loop_write_set,
     history_var_map,
     entered_loop,
     initial_invariant,
@@ -252,6 +256,7 @@ std::map<exprt, exprt> dfcc_instrument_loopt::add_prehead_instructions(
 {
   auto loop_head_location(loop_head->source_location());
   dfcc_remove_loop_tags(loop_head_location);
+  goto_convertt converter(symbol_table, message_handler);
 
   // ```
   //   ... preamble ...
@@ -322,7 +327,7 @@ std::map<exprt, exprt> dfcc_instrument_loopt::add_prehead_instructions(
   }
 
   {
-    // Create and populate the write set.
+    // create and populate the write set
     // DECL loop_write_set
     // DECL addr_of_loop_write_set
     // ASSIGN write_set_ptr := address_of(write_set)
@@ -378,6 +383,7 @@ dfcc_instrument_loopt::add_step_instructions(
 {
   auto loop_head_location(loop_head->source_location());
   dfcc_remove_loop_tags(loop_head_location);
+  goto_convertt converter(symbol_table, message_handler);
 
   // ```
   // STEP: // Loop step block: havoc the loop state
@@ -402,20 +408,21 @@ dfcc_instrument_loopt::add_step_instructions(
 
   {
     // If we jump here, then the loop runs at least once,
-    // so add the base case assertion: `assert(initial_invariant)`.
+    // so add the base case assertion: `assert(initial_invariant)`
     source_locationt check_location(loop_head_location);
     check_location.set_property_class("loop_invariant_base");
     check_location.set_comment(
       "Check invariant before entry for loop " +
       id2string(check_location.get_function()) + "." +
       std::to_string(cbmc_loop_id));
-    step_instrs.add(
-      goto_programt::make_assertion(initial_invariant, check_location));
+    code_assertt assertion{initial_invariant};
+    assertion.add_source_location() = check_location;
+    converter.goto_convert(assertion, step_instrs, language_mode);
   }
 
   {
-    // Check assigns clause inclusion with parent write set
-    // skip the check when if w_parent is NULL.
+    // check assigns clause inclusion with parent write set
+    // skip the check when if w_parent is NULL
     auto goto_instruction = step_instrs.add(goto_programt::make_incomplete_goto(
       equal_exprt(
         outer_write_set,
@@ -472,9 +479,8 @@ dfcc_instrument_loopt::add_step_instructions(
       goto_programt::make_assignment(in_loop_havoc_block, false_exprt{}));
   }
 
-  goto_convertt converter(symbol_table, log.get_message_handler());
   {
-    // Assume the loop invariant after havocing the state.
+    // Assume the loop invariant after havocing the state
     code_assumet assumption{invariant};
     assumption.add_source_location() = loop_head_location;
     converter.goto_convert(assumption, step_instrs, language_mode);
@@ -482,7 +488,7 @@ dfcc_instrument_loopt::add_step_instructions(
 
   {
     // Generate assignments to store the multidimensional decreases clause's
-    // value just before the loop_head.
+    // value just before the loop_head
     for(size_t i = 0; i < old_decreases_vars.size(); i++)
     {
       code_frontend_assignt old_decreases_assignment{
@@ -515,6 +521,7 @@ void dfcc_instrument_loopt::add_body_instructions(
 {
   auto loop_head_location(loop_head->source_location());
   dfcc_remove_loop_tags(loop_head_location);
+  goto_convertt converter(symbol_table, message_handler);
 
   // HEAD: // Loop body block
   //   ... eval guard ...
@@ -532,7 +539,7 @@ void dfcc_instrument_loopt::add_body_instructions(
   goto_programt pre_loop_latch_instrs;
 
   {
-    // Record that we entered the loop with `entered_loop = true`.
+    // Record that we entered the loop with `entered_loop = true`
     pre_loop_latch_instrs.add(
       goto_programt::make_assignment(entered_loop, true_exprt{}));
   }
@@ -544,7 +551,6 @@ void dfcc_instrument_loopt::add_body_instructions(
       step_case_target, in_base_case, loop_head_location));
   }
 
-  goto_convertt converter(symbol_table, log.get_message_handler());
   {
     // Because of the unconditional jump above the following code is only
     // reachable in the step case. Generate the inductive invariant check
@@ -562,7 +568,7 @@ void dfcc_instrument_loopt::add_body_instructions(
 
   {
     // Generate assignments to store the multidimensional decreases clause's
-    // value after one iteration of the loop.
+    // value after one iteration of the loop
     if(!decreases_clauses.empty())
     {
       for(size_t i = 0; i < new_decreases_vars.size(); i++)
@@ -581,12 +587,14 @@ void dfcc_instrument_loopt::add_body_instructions(
         "Check variant decreases after step for loop " +
         id2string(check_location.get_function()) + "." +
         std::to_string(cbmc_loop_id));
-      pre_loop_latch_instrs.add(goto_programt::make_assertion(
+      code_assertt monotonic_decreasing_assertion{
         generate_lexicographic_less_than_check(
-          new_decreases_vars, old_decreases_vars),
-        check_location));
+          new_decreases_vars, old_decreases_vars)};
+      monotonic_decreasing_assertion.add_source_location() = check_location;
+      converter.goto_convert(
+        monotonic_decreasing_assertion, pre_loop_latch_instrs, language_mode);
 
-      // Discard the temporary variables that store decreases clause's value.
+      // Discard the temporary variables that store decreases clause's value
       for(size_t i = 0; i < old_decreases_vars.size(); i++)
       {
         pre_loop_latch_instrs.add(
@@ -601,7 +609,7 @@ void dfcc_instrument_loopt::add_body_instructions(
     goto_function.body, loop_latch, pre_loop_latch_instrs);
 
   {
-    // Change the back edge into assume(false) or assume(!guard).
+    // change the back edge into assume(false) or assume(!guard)
     loop_latch->turn_into_assume();
     loop_latch->condition_nonconst() = boolean_negate(loop_latch->condition());
   }
@@ -612,6 +620,7 @@ void dfcc_instrument_loopt::add_exit_instructions(
   const std::size_t cbmc_loop_id,
   goto_functionst::goto_functiont &goto_function,
   goto_programt::targett loop_head,
+  const exprt::operandst &decreases_clauses,
   const symbol_exprt &loop_write_set,
   const symbol_exprt &addr_of_loop_write_set,
   const std::map<exprt, exprt> &history_var_map,
@@ -621,7 +630,7 @@ void dfcc_instrument_loopt::add_exit_instructions(
   const std::vector<symbol_exprt> &old_decreases_vars,
   const std::vector<symbol_exprt> &new_decreases_vars)
 {
-  // Collect all exit targets of the loop.
+  // collect all exit targets of the loop
   std::set<goto_programt::targett> exit_targets;
 
   for(goto_programt::instructiont::targett target =
@@ -640,7 +649,7 @@ void dfcc_instrument_loopt::add_exit_instructions(
     exit_targets.insert(exit_target);
   }
 
-  // For each exit target of the loop, insert a code block:
+  // For each exit target of the loop, insert a code block :
   // ```
   // EXIT:
   //   // check that step case was checked if loop can run once
@@ -656,8 +665,8 @@ void dfcc_instrument_loopt::add_exit_instructions(
   {
     goto_programt loop_exit_program;
 
-    // Use the head location for this check as well so that all checks related
-    // to a given loop are presented as coming from the loop head.
+    // use the head location for this check as well so that all checks related
+    // to a given loop are presented as coming from the loop head
     source_locationt check_location = loop_head->source_location();
     check_location.set_property_class("loop_step_unwinding");
     check_location.set_comment(
@@ -677,31 +686,34 @@ void dfcc_instrument_loopt::add_exit_instructions(
     loop_exit_program.add(
       goto_programt::make_dead(initial_invariant, exit_location));
 
-    // Release the write set resources.
+    // Release the write set resources
     loop_exit_program.add(goto_programt::make_function_call(
       library.write_set_release_call(addr_of_loop_write_set, exit_location),
       exit_location));
 
-    // Mark write set as going out of scope.
+    // Kill write set
     loop_exit_program.add(
       goto_programt::make_dead(to_symbol_expr(loop_write_set), exit_location));
     loop_exit_program.add(goto_programt::make_dead(
       to_symbol_expr(addr_of_loop_write_set), exit_location));
 
-    // Mark history variables as going out of scope.
+    // Kill history variables
     for(const auto &v : history_var_map)
     {
       loop_exit_program.add(
         goto_programt::make_dead(to_symbol_expr(v.second), exit_location));
     }
 
-    // Mark decreases clause snapshots as gong out of scope.
-    for(size_t i = 0; i < old_decreases_vars.size(); i++)
+    if(!decreases_clauses.empty())
     {
-      loop_exit_program.add(
-        goto_programt::make_dead(old_decreases_vars[i], exit_location));
-      loop_exit_program.add(
-        goto_programt::make_dead(new_decreases_vars[i], exit_location));
+      // Kill decreases clause snapshots
+      for(size_t i = 0; i < old_decreases_vars.size(); i++)
+      {
+        loop_exit_program.add(
+          goto_programt::make_dead(old_decreases_vars[i], exit_location));
+        loop_exit_program.add(
+          goto_programt::make_dead(new_decreases_vars[i], exit_location));
+      }
     }
 
     // Insert the exit block, preserving the loop end target.
