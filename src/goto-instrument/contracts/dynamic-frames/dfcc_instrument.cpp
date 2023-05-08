@@ -6,8 +6,6 @@ Author: Remi Delmas, delmarsd@amazon.com
 
 \*******************************************************************/
 
-// TODO apply loop contracts transformations as part of function instrumentation
-
 #include "dfcc_instrument.h"
 
 #include <util/format_expr.h>
