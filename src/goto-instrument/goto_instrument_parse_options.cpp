@@ -1202,6 +1202,12 @@ void goto_instrument_parse_optionst::instrument_goto_program()
       cmdline.isset(FLAG_LOOP_CONTRACTS) &&
       cmdline.isset(FLAG_LOOP_CONTRACTS_NO_UNWIND))
     {
+      // When the model is produced by Kani, we must not automatically unwind
+      // the backjump introduced by the loop transformation.
+      // Automatic unwinding duplicates assertions found in the loop body, and
+      // since Kani expects property identifiers to remain unique. Having
+      // duplicate instances of the assertions makes Kani fail to handle the
+      // analysis results.
       log.warning() << "**** WARNING: transformed loops will not be unwound "
                     << "after applying loop contracts. Remember to unwind "
                     << "them at least twice to pass unwinding-assertions."
@@ -1242,7 +1248,7 @@ void goto_instrument_parse_optionst::instrument_goto_program()
       cmdline.get_values("nondet-static-exclude").begin(),
       cmdline.get_values("nondet-static-exclude").end());
 
-    // It’s important to keep the order of contracts instrumentation, i.e.,
+    // It's important to keep the order of contracts instrumentation, i.e.,
     // first replacement then enforcement. We rely on contract replacement
     // and inlining of sub-function calls to properly annotate all
     // assignments.
@@ -1254,6 +1260,12 @@ void goto_instrument_parse_optionst::instrument_goto_program()
       if(cmdline.isset(FLAG_LOOP_CONTRACTS_NO_UNWIND))
       {
         contracts.unwind_transformed_loops = false;
+        // When the model is produced by Kani, we must not automatically unwind
+        // the backjump introduced by the loop transformation.
+        // Automatic unwinding duplicates assertions found in the loop body, and
+        // since Kani expects property identifiers to remain unique. Having
+        // duplicate instances of the assertions makes Kani fail to handle the
+        // analysis results.
         log.warning() << "**** WARNING: transformed loops will not be unwound "
                       << "after applying loop contracts. Remember to unwind "
                       << "them at least twice to pass unwinding-assertions."
