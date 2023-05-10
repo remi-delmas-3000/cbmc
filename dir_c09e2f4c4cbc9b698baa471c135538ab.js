@@ -2,6 +2,11 @@ var dir_c09e2f4c4cbc9b698baa471c135538ab =
 [
     [ "dfcc.cpp", "dfcc_8cpp.html", "dfcc_8cpp" ],
     [ "dfcc.h", "dfcc_8h.html", "dfcc_8h" ],
+    [ "dfcc_cfg_info.cpp", "dfcc__cfg__info_8cpp.html", "dfcc__cfg__info_8cpp" ],
+    [ "dfcc_cfg_info.h", "dfcc__cfg__info_8h.html", [
+      [ "dfcc_loop_infot", "classdfcc__loop__infot.html", "classdfcc__loop__infot" ],
+      [ "dfcc_cfg_infot", "classdfcc__cfg__infot.html", "classdfcc__cfg__infot" ]
+    ] ],
     [ "dfcc_check_loop_normal_form.cpp", "dfcc__check__loop__normal__form_8cpp.html", "dfcc__check__loop__normal__form_8cpp" ],
     [ "dfcc_check_loop_normal_form.h", "dfcc__check__loop__normal__form_8h.html", "dfcc__check__loop__normal__form_8h" ],
     [ "dfcc_contract_clauses_codegen.cpp", "dfcc__contract__clauses__codegen_8cpp.html", null ],
@@ -23,6 +28,10 @@ var dir_c09e2f4c4cbc9b698baa471c135538ab =
     [ "dfcc_instrument.cpp", "dfcc__instrument_8cpp.html", null ],
     [ "dfcc_instrument.h", "dfcc__instrument_8h.html", [
       [ "dfcc_instrumentt", "classdfcc__instrumentt.html", "classdfcc__instrumentt" ]
+    ] ],
+    [ "dfcc_instrument_loop.cpp", "dfcc__instrument__loop_8cpp.html", null ],
+    [ "dfcc_instrument_loop.h", "dfcc__instrument__loop_8h.html", [
+      [ "dfcc_instrument_loopt", "classdfcc__instrument__loopt.html", "classdfcc__instrument__loopt" ]
     ] ],
     [ "dfcc_is_cprover_symbol.cpp", "dfcc__is__cprover__symbol_8cpp.html", "dfcc__is__cprover__symbol_8cpp" ],
     [ "dfcc_is_cprover_symbol.h", "dfcc__is__cprover__symbol_8h.html", "dfcc__is__cprover__symbol_8h" ],
