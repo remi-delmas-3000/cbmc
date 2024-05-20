@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CBMC: /home/runner/work/cbmc/cbmc/src/ansi-c/goto_check_c.h File Reference</title>
+<title>CBMC: /home/runner/work/cbmc/cbmc/src/ansi-c/goto-conversion/goto_check_c.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -155,7 +155,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00056">56</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00057">57</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +171,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">  <span class="stringliteral">&quot;(bounds-check)(pointer-check)(memory-leak-check)(memory-cleanup-check)&quot;</span>     \</div>
-<div class="line">  <span class="stringliteral">&quot;(div-by-zero-check)(enum-range-check)&quot;</span>                                      \</div>
+<div class="line">  <span class="stringliteral">&quot;(div-by-zero-check)(float-div-by-zero-check)&quot;</span>                               \</div>
+<div class="line">  <span class="stringliteral">&quot;(enum-range-check)&quot;</span>                                                         \</div>
 <div class="line">  <span class="stringliteral">&quot;(signed-overflow-check)(unsigned-overflow-check)&quot;</span>                           \</div>
 <div class="line">  <span class="stringliteral">&quot;(pointer-overflow-check)(conversion-check)(undefined-shift-check)&quot;</span>          \</div>
 <div class="line">  <span class="stringliteral">&quot;(float-overflow-check)(nan-check)(no-built-in-assertions)&quot;</span>                  \</div>
@@ -225,7 +226,7 @@ Functions</h2></td></tr>
 <div class="line">    options.set_option(option, <span class="keyword">false</span>);                                         \</div>
 <div class="line">  (void)0</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00097">97</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00101">101</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
 
 </div>
 </div>
@@ -274,12 +275,13 @@ Functions</h2></td></tr>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;bounds-check&quot;</span>); \</div>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;pointer-check&quot;</span>); \</div>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;div-by-zero-check&quot;</span>); \</div>
+<div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;float-div-by-zero-check&quot;</span>); \</div>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;signed-overflow-check&quot;</span>); \</div>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;undefined-shift-check&quot;</span>); \</div>
 <div class="line">  PARSE_OPTION_OVERRIDE(cmdline, options, <span class="stringliteral">&quot;pointer-primitive-check&quot;</span>); \</div>
 <div class="line">  (void)0</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00105">105</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8h_source.html#l00109">109</a> of file <a class="el" href="goto__check__c_8h_source.html">goto_check_c.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +330,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02390">2390</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02430">2430</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
 
 </div>
 </div>
@@ -370,7 +372,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02401">2401</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02441">2441</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
 
 </div>
 </div>
@@ -406,7 +408,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02417">2417</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="goto__check__c_8cpp_source.html#l02457">2457</a> of file <a class="el" href="goto__check__c_8cpp_source.html">goto_check_c.cpp</a>.</p>
 
 </div>
 </div>
@@ -415,7 +417,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_f88182c44268ef6b082d02d66ccc5f99.html">ansi-c</a></li><li class="navelem"><a class="el" href="goto__check__c_8h.html">goto_check_c.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_f88182c44268ef6b082d02d66ccc5f99.html">ansi-c</a></li><li class="navelem"><a class="el" href="dir_0ea4c3d6b179c025c29bf4f50d04840d.html">goto-conversion</a></li><li class="navelem"><a class="el" href="goto__check__c_8h.html">goto_check_c.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

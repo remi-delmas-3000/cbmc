@@ -674,6 +674,9 @@ var hierarchy =
     [ "function_filterst", "classfunction__filterst.html", null ],
     [ "function_indicest", "classfunction__indicest.html", null ],
     [ "functionst::function_infot", "structfunctionst_1_1function__infot.html", null ],
+    [ "function_itt_hasht", "structfunction__itt__hasht.html", null ],
+    [ "function_loc_pair_hasht", "structfunction__loc__pair__hasht.html", null ],
+    [ "function_loc_pairt", "structfunction__loc__pairt.html", null ],
     [ "function_name_manglert< MangleFun >", "classfunction__name__manglert.html", null ],
     [ "function_pointer_restrictionst", "classfunction__pointer__restrictionst.html", null ],
     [ "functions_in_scope_visitort", "classfunctions__in__scope__visitort.html", null ],
@@ -1813,11 +1816,13 @@ var hierarchy =
           ] ],
           [ "tag_typet", "classtag__typet.html", [
             [ "c_enum_tag_typet", "classc__enum__tag__typet.html", null ],
-            [ "struct_tag_typet", "classstruct__tag__typet.html", [
-              [ "java_generic_parameter_tagt", "classjava__generic__parameter__tagt.html", null ],
-              [ "java_generic_struct_tag_typet", "classjava__generic__struct__tag__typet.html", null ]
-            ] ],
-            [ "union_tag_typet", "classunion__tag__typet.html", null ]
+            [ "struct_or_union_tag_typet", "classstruct__or__union__tag__typet.html", [
+              [ "struct_tag_typet", "classstruct__tag__typet.html", [
+                [ "java_generic_parameter_tagt", "classjava__generic__parameter__tagt.html", null ],
+                [ "java_generic_struct_tag_typet", "classjava__generic__struct__tag__typet.html", null ]
+              ] ],
+              [ "union_tag_typet", "classunion__tag__typet.html", null ]
+            ] ]
           ] ],
           [ "template_parameter_symbol_typet", "structtemplate__parameter__symbol__typet.html", null ],
           [ "template_typet", "classtemplate__typet.html", null ],
