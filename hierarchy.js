@@ -251,6 +251,7 @@ var hierarchy =
       [ "solver_hardnesst", "structsolver__hardnesst.html", null ]
     ] ],
     [ "clauset", "classclauset.html", null ],
+    [ "goto_convertt::clean_expr_resultt", "structgoto__convertt_1_1clean__expr__resultt.html", null ],
     [ "escape_domaint::cleanupt", "structescape__domaint_1_1cleanupt.html", null ],
     [ "cmdlinet", "classcmdlinet.html", [
       [ "free_form_cmdlinet", "classfree__form__cmdlinet.html", null ],
@@ -1050,6 +1051,7 @@ var hierarchy =
       [ "natural_loops_templatet< P, T, C >", "classnatural__loops__templatet.html", null ]
     ] ],
     [ "c_wranglert::loop_contract_clauset", "structc__wranglert_1_1loop__contract__clauset.html", null ],
+    [ "loop_contract_configt", "structloop__contract__configt.html", null ],
     [ "loop_contracts_clauset", "structloop__contracts__clauset.html", null ],
     [ "loop_contracts_synthesizer_baset", "classloop__contracts__synthesizer__baset.html", [
       [ "enumerative_loop_contracts_synthesizert", "classenumerative__loop__contracts__synthesizert.html", null ]
