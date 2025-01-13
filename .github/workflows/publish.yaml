@@ -14,10 +14,7 @@ jobs:
       - name: Install doxygen
         run: |
           sudo apt update
-          sudo apt install doxygen graphviz pandoc npm
-
-      - name: Install python modules
-        run: sudo python3 -m pip install gitpython pandocfilters
+          sudo apt-get install --no-install-recommends -y doxygen graphviz pandoc npm python3-git python3-pandocfilters
 
       - name: Install mermaid diagram filter
         run: |
