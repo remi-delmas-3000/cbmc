@@ -27,7 +27,7 @@ from `main.*`, `parseoptions.*` and the `Makefile` and use these as the
 skeleton of their application. The `doit()` method in `parseoptions.cpp`
 is the preferred location for the top level control for the program.
 
-### Main usage ###
+## Main usage ##
 
 For most of the transformations, `goto-instrument` takes one or two 
 arguments and any number of options. The two file arguments are 
@@ -40,7 +40,7 @@ option output, with no indication of what has gone wrong. Some of the options
 can work with just an input file and not output file. For more specific
 examples, take a look at the demonstrations below:
 
-### Function pointer removal ###
+## Function pointer removal ##
 
 As an example of a transformation pass being run, imagine you have a file 
 called `function_pointers.c` with the following content:
@@ -163,7 +163,7 @@ You can now see that the function pointer (indirect) call (resulting from
 the array indexing of the array containing the function pointers) 
 has now been substituted by direct, conditional calls.
 
-### Call Graph ###
+## Call Graph ##
 
 This is an example of a command line flag that requires only one argument,
 specifying the input file.

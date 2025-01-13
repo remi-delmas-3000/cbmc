@@ -1,6 +1,7 @@
-\page piped-process `src/util/piped_process.{cpp, h}`
+\page piped-process The `piped_process` API
 
-To utilise the `piped_process` API for interprocess communication with any binary:
+To utilise the `piped_process` API (`src/util/piped_process.{cpp, h}`) for
+interprocess communication with any binary:
 
 * You need to initialise it by calling the construct `piped_processt("binary with args")`.
   * If IPC fails before child process creation, you will get a `system_exceptiont`.

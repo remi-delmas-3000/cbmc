@@ -54,7 +54,7 @@ license</a>.
 Overview of Documentation
 =======
 
-### For users:
+## For users:
 
 * The [CPROVER User Manual](http://www.cprover.org/cprover-manual/) details the
   capabilities of CBMC and describes how to install and use these tools. It
@@ -68,7 +68,7 @@ you can access it <a href=
 * \subpage memory-bounds-checking
 * \subpage satabs
 
-### For contributors:
+## For contributors:
 
 The following pages attempt to provide the information that a developer needs to
 work on CBMC, in a sensible order. In many cases they link to the appropriate
