@@ -176,7 +176,7 @@ This pass adds failed symbols to the symbol table. See
 `src/pointer-analysis/add_failed_symbols.h` for details. The implementation of
 this pass is called via \ref add_failed_symbols(symbol_table_baset &) . The
 purpose of failed symbols is explained in the documentation of the function \ref
-goto_symext::dereference(exprt &, statet &, bool)
+goto_symext::dereference(exprt &, goto_symex_statet &, bool)
 
 <em>Predecessor pass is \ref update-transform or the optional \ref
 nondet-transform if it is being used.</em>

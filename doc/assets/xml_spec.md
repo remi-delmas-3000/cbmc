@@ -475,7 +475,7 @@ The path from the input C code to XML trace goes through the following
 steps:\
 `C` → `GOTO` → `SSA` → `GOTO Trace` → `XML Trace`
 
-#### SSA to GOTO Trace
+### SSA to GOTO Trace
 
 SSA steps are sorted by clocks and the following steps are skipped: PHI,
 GUARD assignments; shared-read, shared-write, constraint, spawn,
