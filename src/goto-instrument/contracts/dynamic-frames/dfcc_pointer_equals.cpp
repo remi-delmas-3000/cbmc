@@ -9,15 +9,14 @@ Date: Jan 2025
 
 #include "dfcc_pointer_equals.h"
 
-#include <util/expr_iterator.h>
+#include <util/c_types.h>
 #include <util/cprover_prefix.h>
+#include <util/expr_iterator.h>
 #include <util/pointer_expr.h>
 #include <util/replace_expr.h>
-#include <util/c_types.h>
 #include <util/std_code.h>
 #include <util/std_expr.h>
 #include <util/symbol.h>
-
 #include "dfcc_cfg_info.h"
 #include "dfcc_library.h"
 
