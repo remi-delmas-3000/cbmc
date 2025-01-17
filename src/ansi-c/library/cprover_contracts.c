@@ -1406,7 +1406,7 @@ __CPROVER_HIDE:;
     if(seen->elems[object_id] != 0)
       return 0;
 #endif
-    // record fresh object in the object set
+
 #ifdef __CPROVER_DFCC_DEBUG_LIB
     // manually inlined below
     __CPROVER_contracts_obj_set_add(seen, ptr);
