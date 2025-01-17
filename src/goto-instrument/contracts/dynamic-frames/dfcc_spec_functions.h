@@ -80,9 +80,6 @@ public:
   ///
   /// \param[in] function_id function to generate instructions from
   /// \param[in] havoc_function_id write set variable to havoc
-  /// \param[in] make_havoced_pointers_invalid if true, havoc turns pointers
-  /// into invalid pointers. Otherwise, makes them nondeterministic, i.e.
-  /// range over all addresses known by symex so far.
   /// \param[out] nof_targets maximum number of targets to havoc
   void generate_havoc_function(
     const irep_idt &function_id,

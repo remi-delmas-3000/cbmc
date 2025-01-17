@@ -83,10 +83,10 @@ class symbol_table_baset;
   "set malloc failure mode to assert-then-assume\n"                            \
   " {y--malloc-fail-null} \t set malloc failure mode to return null\n"         \
   " {y--string-abstraction} \t track C string lengths and zero-termination\n"  \
-  " {y--dfcc-debug-lib} \t enable debug assertions in the cprover_contracts "  \
+  " {y--dfcc-debug-lib} \t enable debug assertions in the cprover contracts "  \
   "library\n"                                                                  \
   " {y--dfcc-simple-invalid-pointer-model} \t use simplified invalid pointer " \
-  "model in the cprover_contracts library (faster, unsound)\n"
+  "model in the cprover contracts library (faster, unsound)\n"
 
 #define OPT_CONFIG_JAVA "(classpath)(cp)(main-class)"
 
