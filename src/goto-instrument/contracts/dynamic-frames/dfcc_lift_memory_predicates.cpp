@@ -7,6 +7,10 @@ Date: August 2022
 
 \*******************************************************************/
 
+// TODO when scanning the goto functions to detect pointer predicates,
+// replace pointer equality p == q with __CPROVER_pointer_equals(p,q)
+// in all user-defined memory predicates.
+
 #include "dfcc_lift_memory_predicates.h"
 
 #include <util/cprover_prefix.h>
