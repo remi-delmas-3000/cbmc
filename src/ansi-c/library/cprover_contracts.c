@@ -1308,7 +1308,6 @@ __CPROVER_HIDE:;
     // __CPROVER_bool record_may_leak = __VERIFIER_nondet___CPROVER_bool();
     // __CPROVER_memory_leak = record_may_leak ? ptr : __CPROVER_memory_leak;
 
-    // record fresh object in the object set
 #ifdef __CPROVER_DFCC_DEBUG_LIB
     // manually inlined below
     __CPROVER_contracts_obj_set_add(write_set->linked_is_fresh, ptr);
